@@ -41,7 +41,7 @@ export const checkTenant = async () => {
 
   if (tenantSubDomain !== "superadmin") {
     try {
-      const uri = `/auth-service/noauth/tenant/check/${tenantSubDomain}`;
+      const uri = `/auth-service/noauth/tenant/check/px`;
 
       const res = await apiClient.get(uri);
 
