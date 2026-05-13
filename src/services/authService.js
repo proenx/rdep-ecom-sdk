@@ -39,21 +39,19 @@ export const checkTenant = async () => {
   // save globally
   setSubDomain(tenantSubDomain);
 
-  if (tenantSubDomain !== "superadmin") {
-    try {
-      const uri = `/auth-service/noauth/tenant/check/px`;
+  try {
+    const uri = `/auth-service/noauth/tenant/check/px`;
 
-      const res = await apiClient.get(uri);
+    const res = await apiClient.get(uri);
 
-      return res?.data || {};
-    } catch (error) {
-      console.error(
-        "Tenant Check Error:",
-        error?.response?.data || error.message,
-      );
+    return res?.data || {};
+  } catch (error) {
+    console.error(
+      "Tenant Check Error:",
+      error?.response?.data || error.message,
+    );
 
-      throw error;
-    }
+    throw error;
   }
 
   return {};
