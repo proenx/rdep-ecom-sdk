@@ -75,6 +75,21 @@ var clearUserDetails = () => {
 };
 
 // src/services/authService.js
+var checkTenant = async (tenantSubDomain) => {
+  var _a;
+  try {
+    const uri = `/auth-service/noauth/tenant/check/${tenantSubDomain}`;
+    const res = await apiClient_default.get(uri);
+    return res;
+  } catch (error) {
+    console.error(
+      "Tenant Check Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+  return;
+};
 var login = async ({ username, password, subDomain }) => {
   var _a, _b;
   const res = await apiClient_default.post("/auth-service/ui/auth", {
@@ -104,6 +119,7 @@ var logout = async () => {
   }
 };
 export {
+  checkTenant,
   clearToken,
   clearUserDetails,
   getToken,

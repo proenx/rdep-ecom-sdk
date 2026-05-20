@@ -83,6 +83,29 @@ const clearUserDetails = () => {
   }
 };
 
+/**
+ * Check Tenant API
+ */
+const checkTenant = async (tenantSubDomain) => {
+  // save globally
+  try {
+    const uri = `/auth-service/noauth/tenant/check/${tenantSubDomain}`;
+    // const uri = `/auth-service/noauth/tenant/check/px`;
+    const res = await apiClient.get(uri);
+    return res;
+  } catch (error) {
+    console.error(
+      "Tenant Check Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+  return;
+};
+
+/**
+ * Login
+ */
 const login = async ({ username, password, subDomain }) => {
   const res = await apiClient.post("/auth-service/ui/auth", {
     username,
@@ -91,11 +114,13 @@ const login = async ({ username, password, subDomain }) => {
   });
 
   const token = res?.headers?.authorization || res?.headers?.Authorization;
+
   if (token) {
     setToken(token);
   }
 
   const user = res?.data || {};
+
   if (user) {
     setUserDetails(user);
   }
@@ -103,6 +128,9 @@ const login = async ({ username, password, subDomain }) => {
   return user;
 };
 
+/**
+ * Logout
+ */
 const logout = async () => {
   try {
     await apiClient.get("/auth-service/ui/logout");
@@ -114,4 +142,4 @@ const logout = async () => {
   }
 };
 
-export { clearToken, clearUserDetails, getToken, getUserDetails, initClient, login, logout, setToken, setUserDetails };
+export { checkTenant, clearToken, clearUserDetails, getToken, getUserDetails, initClient, login, logout, setToken, setUserDetails };

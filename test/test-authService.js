@@ -4,12 +4,17 @@ import {
   logout,
   getToken,
   getUserDetails,
+  checkTenant,
 } from "../dist/index.js";
 
 const run = async () => {
   try {
     initClient("https://app.qa.rdep.io");
     console.log("SDK Initialized");
+
+    // check tenant
+    const tenantCheckResponse = await checkTenant("px");
+    console.log("Tenant Check Response:", tenantCheckResponse);
 
     // Login
     const loginResponse = await login({

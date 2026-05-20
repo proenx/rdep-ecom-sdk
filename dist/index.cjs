@@ -29,6 +29,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.js
 var index_exports = {};
 __export(index_exports, {
+  checkTenant: () => checkTenant,
   clearToken: () => clearToken,
   clearUserDetails: () => clearUserDetails,
   getToken: () => getToken,
@@ -118,6 +119,21 @@ var clearUserDetails = () => {
 };
 
 // src/services/authService.js
+var checkTenant = async (tenantSubDomain) => {
+  var _a;
+  try {
+    const uri = `/auth-service/noauth/tenant/check/${tenantSubDomain}`;
+    const res = await apiClient_default.get(uri);
+    return res;
+  } catch (error) {
+    console.error(
+      "Tenant Check Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+  return;
+};
 var login = async ({ username, password, subDomain }) => {
   var _a, _b;
   const res = await apiClient_default.post("/auth-service/ui/auth", {
@@ -148,6 +164,7 @@ var logout = async () => {
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  checkTenant,
   clearToken,
   clearUserDetails,
   getToken,
