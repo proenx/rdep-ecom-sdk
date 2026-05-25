@@ -80,7 +80,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/ui/auth")) {
+    if (res.config.url.includes("/auth-service/cws/auth")) {
       return res;
     }
     return res.data;
@@ -119,6 +119,23 @@ var clearUserDetails = () => {
 };
 
 // src/services/authService.js
+var login = async ({ username, password, domainName }) => {
+  var _a, _b;
+  const res = await apiClient_default.post("/auth-service/cws/auth", {
+    username,
+    password,
+    domainName
+  });
+  const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+  if (token) {
+    setToken(token);
+  }
+  const user = (res == null ? void 0 : res.data) || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
 var checkTenant = async (tenantSubDomain) => {
   var _a;
   try {
@@ -133,23 +150,6 @@ var checkTenant = async (tenantSubDomain) => {
     throw error;
   }
   return;
-};
-var login = async ({ username, password, subDomain }) => {
-  var _a, _b;
-  const res = await apiClient_default.post("/auth-service/ui/auth", {
-    username,
-    password,
-    tenantSubDomain: subDomain
-  });
-  const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
-  if (token) {
-    setToken(token);
-  }
-  const user = (res == null ? void 0 : res.data) || {};
-  if (user) {
-    setUserDetails(user);
-  }
-  return user;
 };
 var logout = async () => {
   var _a;

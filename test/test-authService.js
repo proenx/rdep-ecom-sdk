@@ -10,20 +10,17 @@ import {
 const run = async () => {
   try {
     initClient("https://app.qa.rdep.io");
-    console.log("SDK Initialized");
-
     // check tenant
     const tenantCheckResponse = await checkTenant("px");
-    console.log("Tenant Check Response:", tenantCheckResponse);
-
     // Login
     const loginResponse = await login({
-      username: "TENANT",
-      password: "Were@123",
-      subDomain: "px",
+      username: "9886082728",
+      password: "123456",
+      tennantSubDomain: "px",
+      // domainName: "www.rdepretail.com",
     });
 
-    console.log("Login Response:", loginResponse);
+    console.log("checkTenant", checkTenant, tenantCheckResponse);
 
     // Validate token
     const token = getToken();

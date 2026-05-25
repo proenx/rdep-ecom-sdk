@@ -22,7 +22,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (res) => {
     // Login API → return full response
-    if (res.config.url.includes("/auth-service/ui/auth")) {
+    if (res.config.url.includes("/auth-service/cws/auth")) {
       return res;
     }
     // Other APIs → return only data

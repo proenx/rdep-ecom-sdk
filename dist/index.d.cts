@@ -44,7 +44,7 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (res) => {
     // Login API → return full response
-    if (res.config.url.includes("/auth-service/ui/auth")) {
+    if (res.config.url.includes("/auth-service/cws/auth")) {
       return res;
     }
     // Other APIs → return only data
@@ -84,6 +84,26 @@ const clearUserDetails = () => {
 };
 
 /**
+ * Login
+ */
+const login = async ({ username, password, domainName }) => {
+  const res = await apiClient.post("/auth-service/cws/auth", {
+    username,
+    password,
+    domainName: domainName,
+  });
+  const token = res?.headers?.authorization || res?.headers?.Authorization;
+  if (token) {
+    setToken(token);
+  }
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+
+/**
  * Check Tenant API
  */
 const checkTenant = async (tenantSubDomain) => {
@@ -104,31 +124,6 @@ const checkTenant = async (tenantSubDomain) => {
 };
 
 /**
- * Login
- */
-const login = async ({ username, password, subDomain }) => {
-  const res = await apiClient.post("/auth-service/ui/auth", {
-    username,
-    password,
-    tenantSubDomain: subDomain,
-  });
-
-  const token = res?.headers?.authorization || res?.headers?.Authorization;
-
-  if (token) {
-    setToken(token);
-  }
-
-  const user = res?.data || {};
-
-  if (user) {
-    setUserDetails(user);
-  }
-
-  return user;
-};
-
-/**
  * Logout
  */
 const logout = async () => {
@@ -141,5 +136,7 @@ const logout = async () => {
     clearUserDetails();
   }
 };
+
+//** Resigter */
 
 export { checkTenant, clearToken, clearUserDetails, getToken, getUserDetails, initClient, login, logout, setToken, setUserDetails };

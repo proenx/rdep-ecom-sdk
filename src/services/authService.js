@@ -3,6 +3,26 @@ import { setToken, clearToken } from "../core/tokenManager.js";
 import { setUserDetails, clearUserDetails } from "../core/userDetails.js";
 
 /**
+ * Login
+ */
+export const login = async ({ username, password, domainName }) => {
+  const res = await apiClient.post("/auth-service/cws/auth", {
+    username,
+    password,
+    domainName: domainName,
+  });
+  const token = res?.headers?.authorization || res?.headers?.Authorization;
+  if (token) {
+    setToken(token);
+  }
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+
+/**
  * Check Tenant API
  */
 export const checkTenant = async (tenantSubDomain) => {
@@ -23,31 +43,6 @@ export const checkTenant = async (tenantSubDomain) => {
 };
 
 /**
- * Login
- */
-export const login = async ({ username, password, subDomain }) => {
-  const res = await apiClient.post("/auth-service/ui/auth", {
-    username,
-    password,
-    tenantSubDomain: subDomain,
-  });
-
-  const token = res?.headers?.authorization || res?.headers?.Authorization;
-
-  if (token) {
-    setToken(token);
-  }
-
-  const user = res?.data || {};
-
-  if (user) {
-    setUserDetails(user);
-  }
-
-  return user;
-};
-
-/**
  * Logout
  */
 export const logout = async () => {
@@ -60,3 +55,5 @@ export const logout = async () => {
     clearUserDetails();
   }
 };
+
+//** Resigter */
