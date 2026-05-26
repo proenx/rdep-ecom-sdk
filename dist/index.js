@@ -36,7 +36,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/cws/auth")) {
+    if (res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register")) {
       return res;
     }
     return res.data;
@@ -92,10 +92,39 @@ var login = async ({ username, password, domainName }) => {
   }
   return user;
 };
+var register = async ({
+  firstName,
+  middleName,
+  lastName,
+  mobileNumber,
+  email,
+  password,
+  domainName
+}) => {
+  var _a, _b;
+  const res = await apiClient_default.post("/auth-service/cws/register", {
+    firstName,
+    middleName,
+    lastName,
+    mobileNumber,
+    email,
+    password,
+    domainName
+  });
+  const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+  if (token) {
+    setToken(token);
+  }
+  const user = (res == null ? void 0 : res.data) || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
 var checkTenant = async (tenantSubDomain) => {
   var _a;
   try {
-    const uri = `/auth-service/noauth/tenant/check/${tenantSubDomain}`;
+    const uri = `/auth-service/noauth/store/info/${tenantSubDomain}`;
     const res = await apiClient_default.get(uri);
     return res;
   } catch (error) {
@@ -127,6 +156,7 @@ export {
   initClient,
   login,
   logout,
+  register,
   setToken,
   setUserDetails
 };
