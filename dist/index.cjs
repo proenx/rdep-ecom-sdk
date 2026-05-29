@@ -29,6 +29,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.js
 var index_exports = {};
 __export(index_exports, {
+  addItemToCart: () => addItemToCart,
   checkTenant: () => checkTenant,
   clearToken: () => clearToken,
   clearUserDetails: () => clearUserDetails,
@@ -39,7 +40,8 @@ __export(index_exports, {
   logout: () => logout,
   register: () => register,
   setToken: () => setToken,
-  setUserDetails: () => setUserDetails
+  setUserDetails: () => setUserDetails,
+  updateItemQty: () => updateItemQty
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -192,8 +194,73 @@ var logout = async () => {
     clearUserDetails();
   }
 };
+
+// src/services/cartService.js
+var addItemToCart = async ({
+  operation = "AddItem",
+  cartItems = []
+}) => {
+  var _a, _b, _c;
+  try {
+    const payload = {
+      operation,
+      cartItems
+    };
+    const res = await apiClient_default.post(
+      "/cart-service/ws/cart/addItemtoCart",
+      payload
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+    if (token) {
+      setToken(token);
+    }
+    const addCart = responseData || {};
+    console.log("Add To Cart API Response:", addCart);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add To Cart API Error:",
+      ((_c = error == null ? void 0 : error.response) == null ? void 0 : _c.data) || error.message
+    );
+    throw error;
+  }
+};
+var updateItemQty = async ({
+  operation = "UpdateItemQuantity",
+  cartId,
+  cartItems = []
+}) => {
+  var _a, _b, _c;
+  try {
+    const payload = {
+      operation,
+      cartId,
+      cartItems
+    };
+    const res = await apiClient_default.post(
+      "/cart-service/ws/cart/updateItemQty",
+      payload
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+    if (token) {
+      setToken(token);
+    }
+    const updateCart = responseData || {};
+    console.log("response from sdk", updateCart);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Update Item Qty API Error:",
+      ((_c = error == null ? void 0 : error.response) == null ? void 0 : _c.data) || error.message
+    );
+    throw error;
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  addItemToCart,
   checkTenant,
   clearToken,
   clearUserDetails,
@@ -204,5 +271,6 @@ var logout = async () => {
   logout,
   register,
   setToken,
-  setUserDetails
+  setUserDetails,
+  updateItemQty
 });

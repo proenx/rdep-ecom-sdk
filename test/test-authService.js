@@ -23,24 +23,23 @@ const run = async () => {
 
     console.log("checkTenant", checkTenant, tenantCheckResponse);
 
+    // Get user details
+    const userDetails = getUserDetails();
+    console.log("User Details:", userDetails);
     // Validate token
     const token = getToken();
     console.log("Stored Token:", token);
 
-    const registerResponse = await register({
-      firstName: "Shiv",
-      middleName: "",
-      lastName: "B",
-      mobileNumber: "9988776655",
-      email: "shivani123@gmail.com",
-      password: "123456",
-      domainName: "www.rdepretail.com",
-    });
-    console.log("registerResponse", registerResponse);
-
-    // Get user details
-    const userDetails = getUserDetails();
-    console.log("User Details:", userDetails);
+    // const registerResponse = await register({
+    //   firstName: "Shiv",
+    //   middleName: "",
+    //   lastName: "B",
+    //   mobileNumber: "9988776655",
+    //   email: "shivani123@gmail.com",
+    //   password: "123456",
+    //   domainName: "www.rdepretail.com",
+    // });
+    // console.log("registerResponse", registerResponse);
 
     // Logout
     await logout();
