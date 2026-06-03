@@ -2,14 +2,90 @@ import apiClient from "../core/apiClient.js";
 import { setToken, clearToken } from "../core/tokenManager.js";
 import { setUserDetails, clearUserDetails } from "../core/userDetails.js";
 
+let currentTenantId = null;
+
+export const setTenantId = (tenantId) => {
+  if (tenantId === undefined || tenantId === null || tenantId === "") {
+    return;
+  }
+  currentTenantId = String(tenantId);
+};
+
+export const getTenantId = () => {
+  if (currentTenantId) {
+    return currentTenantId;
+  }
+
+  if (typeof process !== "undefined" && process?.env?.RDEP_TENANT_ID) {
+    return String(process.env.RDEP_TENANT_ID);
+  }
+
+  return null;
+};
+
+/**
+ * Login
+ */
+export const login = async ({ username, password, domainName }) => {
+  const res = await apiClient.post("/auth-service/cws/auth", {
+    username,
+    password,
+    domainName: domainName,
+  });
+  const token = res?.headers?.authorization || res?.headers?.Authorization;
+  if (token) {
+    setToken(token);
+  }
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+
+/**
+ * Register
+ */
+export const register = async ({
+  firstName,
+  middleName,
+  lastName,
+  mobileNumber,
+  email,
+  password,
+  domainName,
+}) => {
+  const res = await apiClient.post("/auth-service/cws/register", {
+    firstName,
+    middleName,
+    lastName,
+    mobileNumber,
+    email,
+    password,
+    domainName,
+  });
+  const token = res?.headers?.authorization || res?.headers?.Authorization;
+  if (token) {
+    setToken(token);
+  }
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+
 /**
  * Check Tenant API
  */
-export const checkTenant = async (tenantSubDomain) => {
-  // save globally
+export const checkTenant = async (tenantDomain) => {
   try {
-    const uri = `/auth-service/noauth/tenant/check/${tenantSubDomain}`;
-    // const uri = `/auth-service/noauth/tenant/check/px`;
+    if (!tenantDomain) {
+      throw new Error("checkTenant requires a tenantDomain");
+    }
+
+    const encodedDomain = encodeURIComponent(String(tenantDomain));
+    const uri = `/auth-service/noauth/store/info/${encodedDomain}`;
     const res = await apiClient.get(uri);
     return res;
   } catch (error) {
@@ -23,28 +99,24 @@ export const checkTenant = async (tenantSubDomain) => {
 };
 
 /**
- * Login
+ * Resolve tenantId from tenant domain
  */
-export const login = async ({ username, password, subDomain }) => {
-  const res = await apiClient.post("/auth-service/ui/auth", {
-    username,
-    password,
-    tenantSubDomain: subDomain,
-  });
+export const getTenantIdByDomain = async (tenantDomain) => {
+  const storeInfo = await checkTenant(tenantDomain);
+  const tenantId =
+    storeInfo?.tenantId ??
+    storeInfo?.tenantID ??
+    storeInfo?.id ??
+    storeInfo?.storeId ??
+    storeInfo?.storeID ??
+    storeInfo?.tenant?.id;
 
-  const token = res?.headers?.authorization || res?.headers?.Authorization;
-
-  if (token) {
-    setToken(token);
+  if (tenantId === undefined || tenantId === null || tenantId === "") {
+    throw new Error("Tenant ID not found in store info response");
   }
 
-  const user = res?.data || {};
-
-  if (user) {
-    setUserDetails(user);
-  }
-
-  return user;
+  setTenantId(tenantId);
+  return String(tenantId);
 };
 
 /**
@@ -58,5 +130,6 @@ export const logout = async () => {
   } finally {
     clearToken();
     clearUserDetails();
+    currentTenantId = null;
   }
 };
