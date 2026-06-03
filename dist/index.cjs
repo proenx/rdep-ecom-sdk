@@ -47,6 +47,7 @@ __export(index_exports, {
   logout: () => logout,
   refreshCart: () => refreshCart,
   register: () => register,
+  removeItemFromCart: () => removeItemFromCart,
   setTenantId: () => setTenantId,
   setToken: () => setToken,
   setUserDetails: () => setUserDetails,
@@ -335,6 +336,38 @@ var refreshCart = async ({
     throw error;
   }
 };
+var removeItemFromCart = async ({
+  operation = "RemoveItem",
+  cartId,
+  cartItems = []
+}) => {
+  var _a, _b, _c;
+  try {
+    const payload = {
+      operation,
+      cartId,
+      cartItems
+    };
+    const res = await apiClient_default.post(
+      "/cart-service/ws/cart/removeItem",
+      payload
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+    if (token) {
+      setToken(token);
+    }
+    const removeCartResponse = responseData || {};
+    console.log("Remove Item API Response:", removeCartResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Remove Item API Error:",
+      ((_c = error == null ? void 0 : error.response) == null ? void 0 : _c.data) || error.message
+    );
+    throw error;
+  }
+};
 
 // src/services/orderService.js
 var cancelOrderBySku = async (sku) => {
@@ -520,6 +553,7 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   logout,
   refreshCart,
   register,
+  removeItemFromCart,
   setTenantId,
   setToken,
   setUserDetails,

@@ -345,6 +345,47 @@ const refreshCart = async ({
 };
 
 /**
+ * Remove item(s) from cart
+ */
+const removeItemFromCart = async ({
+  operation = "RemoveItem",
+  cartId,
+  cartItems = [],
+}) => {
+  try {
+    const payload = {
+      operation,
+      cartId,
+      cartItems,
+    };
+
+    const res = await apiClient.post(
+      "/cart-service/ws/cart/removeItem",
+      payload,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = res?.headers?.authorization || res?.headers?.Authorization;
+    if (token) {
+      setToken(token);
+    }
+    const removeCartResponse = responseData || {};
+    console.log("Remove Item API Response:", removeCartResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Remove Item API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
  * Cancel order by SKU
  */
 const cancelOrderBySku = async (sku) => {
@@ -572,4 +613,4 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 
-export { addItemToCart, cancelOrderBySku, checkTenant, clearToken, clearUserDetails, getCategoriesByTenant, getFiltersByTenantAndStore, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, refreshCart, register, setTenantId, setToken, setUserDetails, updateItemQty };
+export { addItemToCart, cancelOrderBySku, checkTenant, clearToken, clearUserDetails, getCategoriesByTenant, getFiltersByTenantAndStore, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, refreshCart, register, removeItemFromCart, setTenantId, setToken, setUserDetails, updateItemQty };

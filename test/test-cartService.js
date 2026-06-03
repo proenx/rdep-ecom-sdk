@@ -1,6 +1,7 @@
 import {
   initClient,
   addItemToCart,
+  removeItemFromCart,
   updateItemQty,
   refreshCart,
   setToken,
@@ -80,6 +81,27 @@ const run = async () => {
       throw new Error("refreshCart failed: invalid statusCode");
     }
 
+    const removeItemResponse = await removeItemFromCart({
+      operation: "RemoveItem",
+      cartId: 7360,
+      cartItems: [
+        {
+          storeId: 734,
+          sku: "13456845",
+          storeCode: "3002",
+        },
+      ],
+    });
+
+    console.log("REMOVE ITEM RESPONSE:", removeItemResponse);
+
+    if (!removeItemResponse || removeItemResponse.statusCode !== 200) {
+      throw new Error("removeItemFromCart failed: invalid statusCode");
+    }
+
+    if (!Array.isArray(removeItemResponse.itemResult)) {
+      throw new Error("removeItemFromCart failed: itemResult is not an array");
+    }
   } catch (e) {
     console.error("CART TEST FAILED");
     console.error(e?.response?.data || e.message);
