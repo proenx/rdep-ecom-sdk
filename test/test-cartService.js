@@ -2,6 +2,7 @@ import {
   initClient,
   addItemToCart,
   updateItemQty,
+  refreshCart,
   setToken,
   getToken,
   login,
@@ -64,6 +65,21 @@ const run = async () => {
     if (!Array.isArray(updateResponse.itemResult)) {
       throw new Error("updateItemQty failed: itemResult is not an array");
     }
+
+    const refreshResponse = await refreshCart({
+      operation: "Refresh cart",
+      cartId: 14771,
+      customerMobileNumber: "+918291339396",
+      customerName: "",
+      customerEmail: "",
+    });
+
+    console.log("REFRESH CART RESPONSE:", refreshResponse);
+
+    if (!refreshResponse || refreshResponse.statusCode !== 200) {
+      throw new Error("refreshCart failed: invalid statusCode");
+    }
+
   } catch (e) {
     console.error("CART TEST FAILED");
     console.error(e?.response?.data || e.message);

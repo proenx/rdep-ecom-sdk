@@ -81,3 +81,48 @@ export const updateItemQty = async ({
     throw error;
   }
 };
+
+/**
+ * Refresh existing cart details
+ */
+export const refreshCart = async ({
+  operation = "Refresh cart",
+  cartId,
+  customerMobileNumber,
+  customerName = "",
+  customerEmail = "",
+}) => {
+  try {
+    const payload = {
+      operation,
+      cartId,
+      customerMobileNumber,
+      customerName,
+      customerEmail,
+    };
+
+    const res = await apiClient.post(
+      "/cart-service/ws/cart/refreshCart",
+      payload,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = res?.headers?.authorization || res?.headers?.Authorization;
+    if (token) {
+      setToken(token);
+    }
+    const refreshCartResponse = responseData || {};
+    console.log("Refresh Cart API Response:", refreshCartResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Refresh Cart API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
