@@ -24,7 +24,7 @@ const run = async () => {
       await login({
         username: "9886082728",
         password: "123456",
-        domainName: "www.rdepretail.com",
+        domainName: "ecom-retail.qa.rdep.io",
       });
     }
     console.log("Token", login, getToken());
@@ -33,31 +33,31 @@ const run = async () => {
       operation: "AddItem",
       cartItems: [
         {
-          storeId: 265,
+          storeId: 1681,
           quantity: 1,
-          sku: "212326",
-          storeCode: "0265",
-          sequence: 1,
+          sku: "GR001",
+          storeCode: "0001",
+          sequence: 3,
         },
       ],
     });
 
-    console.log("CART API RESPONSE:", cartResponse.data || cartResponse);
+    console.log("Added Item:", cartResponse.data || cartResponse);
 
     const updateResponse = await updateItemQty({
       operation: "UpdateItemQuantity",
-      cartId: 14773,
+      cartId: 14859,
       cartItems: [
         {
-          storeId: 265,
-          newQuantity: 2,
-          sku: "89517",
-          storeCode: "0265",
+          storeId: 1681,
+          newQuantity: 3,
+          storeCode: "0001",
+          sku: "GR001",
         },
       ],
     });
 
-    console.log("UPDATE ITEM QTY RESPONSE:", updateResponse);
+    console.log("Update Item", updateResponse);
 
     if (!updateResponse || updateResponse.statusCode !== 200) {
       throw new Error("updateItemQty failed: invalid statusCode");
@@ -69,7 +69,7 @@ const run = async () => {
 
     const refreshResponse = await refreshCart({
       operation: "Refresh cart",
-      cartId: 14771,
+      cartId: 14859,
       customerMobileNumber: "+918291339396",
       customerName: "",
       customerEmail: "",
@@ -83,12 +83,12 @@ const run = async () => {
 
     const removeItemResponse = await removeItemFromCart({
       operation: "RemoveItem",
-      cartId: 7360,
+      cartId: 14857,
       cartItems: [
         {
-          storeId: 734,
-          sku: "13456845",
-          storeCode: "3002",
+          storeId: 1681,
+          sku: "GR001",
+          storeCode: "0001",
         },
       ],
     });

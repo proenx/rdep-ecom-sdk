@@ -4,6 +4,33 @@ import { setUserDetails, clearUserDetails } from "../core/userDetails.js";
 
 let currentTenantId = null;
 
+const extractToken = (res) => {
+  const headers = res?.headers || {};
+  const data = res?.data || {};
+
+  const headerToken =
+    headers.authorization ||
+    headers.Authorization ||
+    headers["x-auth-token"] ||
+    headers["X-Auth-Token"] ||
+    headers["x-access-token"] ||
+    headers["X-Access-Token"];
+
+  if (headerToken) {
+    return String(headerToken);
+  }
+
+  const bodyToken =
+    data.token ||
+    data.accessToken ||
+    data.access_token ||
+    data.jwt ||
+    data.authToken ||
+    data.authorization;
+
+  return bodyToken ? String(bodyToken) : null;
+};
+
 export const setTenantId = (tenantId) => {
   if (tenantId === undefined || tenantId === null || tenantId === "") {
     return;
@@ -32,7 +59,7 @@ export const login = async ({ username, password, domainName }) => {
     password,
     domainName: domainName,
   });
-  const token = res?.headers?.authorization || res?.headers?.Authorization;
+  const token = extractToken(res);
   if (token) {
     setToken(token);
   }
@@ -64,7 +91,7 @@ export const register = async ({
     password,
     domainName,
   });
-  const token = res?.headers?.authorization || res?.headers?.Authorization;
+  const token = extractToken(res);
   if (token) {
     setToken(token);
   }
