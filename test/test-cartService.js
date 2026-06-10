@@ -81,7 +81,7 @@ const run = async () => {
       throw new Error("refreshCart failed: invalid statusCode");
     }
 
-    const removeItemResponse = await removeItemFromCart({
+    const removeItemRequest = {
       operation: "RemoveItem",
       cartId: 14857,
       cartItems: [
@@ -91,7 +91,9 @@ const run = async () => {
           storeCode: "0001",
         },
       ],
-    });
+    };
+
+    const removeItemResponse = await removeItemFromCart(removeItemRequest);
 
     console.log("REMOVE ITEM RESPONSE:", removeItemResponse);
 
