@@ -76,6 +76,16 @@ var clearUserDetails = () => {
 
 // src/services/authService.js
 var currentTenantId = null;
+var extractToken = (res) => {
+  const headers = (res == null ? void 0 : res.headers) || {};
+  const data = (res == null ? void 0 : res.data) || {};
+  const headerToken = headers.authorization || headers.Authorization || headers["x-auth-token"] || headers["X-Auth-Token"] || headers["x-access-token"] || headers["X-Access-Token"];
+  if (headerToken) {
+    return String(headerToken);
+  }
+  const bodyToken = data.token || data.accessToken || data.access_token || data.jwt || data.authToken || data.authorization;
+  return bodyToken ? String(bodyToken) : null;
+};
 var setTenantId = (tenantId) => {
   if (tenantId === void 0 || tenantId === null || tenantId === "") {
     return;
@@ -93,13 +103,12 @@ var getTenantId = () => {
   return null;
 };
 var login = async ({ username, password, domainName }) => {
-  var _a, _b;
   const res = await apiClient_default.post("/auth-service/cws/auth", {
     username,
     password,
     domainName
   });
-  const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+  const token = extractToken(res);
   if (token) {
     setToken(token);
   }
@@ -118,7 +127,6 @@ var register = async ({
   password,
   domainName
 }) => {
-  var _a, _b;
   const res = await apiClient_default.post("/auth-service/cws/register", {
     firstName,
     middleName,
@@ -128,7 +136,7 @@ var register = async ({
     password,
     domainName
   });
-  const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+  const token = extractToken(res);
   if (token) {
     setToken(token);
   }
@@ -312,9 +320,150 @@ var removeItemFromCart = async ({
   }
 };
 
+// src/services/customerService.js
+var extractTokenFromResponse = (res) => {
+  const headers = (res == null ? void 0 : res.headers) || {};
+  return headers.authorization || headers.Authorization || headers["x-auth-token"] || headers["X-Auth-Token"] || headers["x-access-token"] || headers["X-Access-Token"] || null;
+};
+var getCustomerAddress = async () => {
+  var _a;
+  try {
+    const endpoint = "/customer-service/cws/address";
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    const addressResponse = responseData || {};
+    console.log("Customer Address API Response:", addressResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Customer Address API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var addCustomerAddress = async (addressRequest = {}) => {
+  var _a;
+  try {
+    if (!addressRequest || typeof addressRequest !== "object") {
+      throw new Error("addCustomerAddress requires a valid request object");
+    }
+    const endpoint = "/customer-service/cws/address";
+    const res = await apiClient_default.post(endpoint, addressRequest);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    const addAddressResponse = responseData || {};
+    console.log("Add Customer Address API Response:", addAddressResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Customer Address API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var editCustomerAddress = async ({
+  addressId,
+  addressRequest = {}
+} = {}) => {
+  var _a;
+  try {
+    if (addressId === void 0 || addressId === null || addressId === "") {
+      throw new Error("editCustomerAddress requires a valid addressId");
+    }
+    if (!addressRequest || typeof addressRequest !== "object") {
+      throw new Error("editCustomerAddress requires a valid request object");
+    }
+    const encodedAddressId = encodeURIComponent(String(addressId));
+    const endpoint = `/customer-service/cws/address/${encodedAddressId}`;
+    const res = await apiClient_default.patch(endpoint, addressRequest);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    const editAddressResponse = responseData || {};
+    console.log("Edit Customer Address API Response:", editAddressResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Edit Customer Address API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+
 // src/services/orderService.js
+var extractTokenFromResponse2 = (res) => {
+  const headers = (res == null ? void 0 : res.headers) || {};
+  return headers.authorization || headers.Authorization || headers["x-auth-token"] || headers["X-Auth-Token"] || headers["x-access-token"] || headers["X-Access-Token"] || null;
+};
+var placeOrder = async (orderRequest = {}) => {
+  var _a;
+  try {
+    if (!orderRequest || typeof orderRequest !== "object") {
+      throw new Error("placeOrder requires a valid order request object");
+    }
+    const res = await apiClient_default.post(
+      "/order-service/ws/order/place",
+      orderRequest
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    console.log("Place Order API:", res);
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    const placeOrderResponse = responseData || {};
+    console.log("Place Order API Response:", placeOrderResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Place Order API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var recordOrderPayment = async (paymentRequest = {}) => {
+  var _a;
+  try {
+    if (!paymentRequest || typeof paymentRequest !== "object") {
+      throw new Error(
+        "recordOrderPayment requires a valid payment request object"
+      );
+    }
+    const res = await apiClient_default.post(
+      "/order-service/ws/order/payment",
+      paymentRequest
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    const paymentResponse = responseData || {};
+    console.log("Order Payment API Response:", paymentResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order Payment API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var cancelOrderBySku = async (sku) => {
-  var _a, _b, _c;
+  var _a;
   try {
     if (!sku) {
       throw new Error("cancelOrderBySku requires a sku");
@@ -324,7 +473,7 @@ var cancelOrderBySku = async (sku) => {
       `/order-service/ws/order/cancel/${encodedSku}`
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
-    const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+    const token = extractTokenFromResponse2(res);
     if (token) {
       setToken(token);
     }
@@ -334,7 +483,7 @@ var cancelOrderBySku = async (sku) => {
   } catch (error) {
     console.error(
       "Cancel Order API Error:",
-      ((_c = error == null ? void 0 : error.response) == null ? void 0 : _c.data) || error.message
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
     );
     throw error;
   }
@@ -477,12 +626,15 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 export {
+  addCustomerAddress,
   addItemToCart,
   cancelOrderBySku,
   checkTenant,
   clearToken,
   clearUserDetails,
+  editCustomerAddress,
   getCategoriesByTenant,
+  getCustomerAddress,
   getFiltersByTenantAndStore,
   getProductDetailById,
   getProductsByTenantAndStore,
@@ -493,6 +645,8 @@ export {
   initClient,
   login,
   logout,
+  placeOrder,
+  recordOrderPayment,
   refreshCart,
   register,
   removeItemFromCart,

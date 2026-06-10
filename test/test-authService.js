@@ -12,13 +12,13 @@ const run = async () => {
   try {
     initClient("https://app.qa.rdep.io");
     // check tenant
-    const tenantCheckResponse = await checkTenant("www.rdepretail.com");
+    const tenantCheckResponse = await checkTenant("ecom-retail.qa.rdep.io");
     // Login
     const loginResponse = await login({
       username: "9886082728",
       password: "123456",
       // tennantSubDomain: "px",
-      domainName: "www.rdepretail.com",
+      domainName: "ecom-retail.qa.rdep.io",
     });
 
     console.log("checkTenant", checkTenant, tenantCheckResponse);
@@ -37,7 +37,7 @@ const run = async () => {
     //   mobileNumber: "9988776655",
     //   email: "shivani123@gmail.com",
     //   password: "123456",
-    //   domainName: "www.rdepretail.com",
+    //   domainName: "ecom-retail.qa.rdep.io",
     // });
     // console.log("registerResponse", registerResponse);
 
