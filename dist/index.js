@@ -189,14 +189,72 @@ var logout = async () => {
 };
 
 // src/services/cartService.js
+var CART_ID_STORAGE_KEY = "cart_id";
+var currentCartId = null;
+var toCartIdPayloadValue = (cartId) => {
+  if (cartId === void 0 || cartId === null || cartId === "") {
+    return null;
+  }
+  const normalized = String(cartId).trim();
+  if (!normalized) {
+    return null;
+  }
+  const parsed = Number(normalized);
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return parsed;
+  }
+  return normalized;
+};
+var setCartId = (cartId) => {
+  if (cartId === void 0 || cartId === null || cartId === "") {
+    return;
+  }
+  currentCartId = String(cartId);
+  if (typeof window !== "undefined") {
+    localStorage.setItem(CART_ID_STORAGE_KEY, currentCartId);
+  }
+};
+var getCartId = () => {
+  if (currentCartId) {
+    return currentCartId;
+  }
+  if (typeof window !== "undefined") {
+    const storedCartId = localStorage.getItem(CART_ID_STORAGE_KEY);
+    if (storedCartId) {
+      currentCartId = storedCartId;
+      return currentCartId;
+    }
+  }
+  return null;
+};
+var resolveCartId = (incomingCartId) => {
+  if (incomingCartId !== void 0 && incomingCartId !== null && incomingCartId !== "") {
+    setCartId(incomingCartId);
+    return toCartIdPayloadValue(incomingCartId);
+  }
+  return toCartIdPayloadValue(getCartId());
+};
+var extractCartId = (responseData) => {
+  var _a, _b, _c, _d;
+  return (responseData == null ? void 0 : responseData.cartId) ?? (responseData == null ? void 0 : responseData.cartID) ?? ((_a = responseData == null ? void 0 : responseData.data) == null ? void 0 : _a.cartId) ?? ((_b = responseData == null ? void 0 : responseData.data) == null ? void 0 : _b.cartID) ?? ((_c = responseData == null ? void 0 : responseData.cart) == null ? void 0 : _c.cartId) ?? ((_d = responseData == null ? void 0 : responseData.cart) == null ? void 0 : _d.cartID);
+};
+var saveCartIdFromResponse = (responseData) => {
+  const responseCartId = extractCartId(responseData);
+  if (responseCartId !== void 0 && responseCartId !== null && responseCartId !== "") {
+    setCartId(responseCartId);
+  }
+};
 var addItemToCart = async ({
   operation = "AddItem",
+  cartId,
   cartItems = []
 }) => {
   var _a, _b, _c;
   try {
+    const resolvedCartId = resolveCartId(cartId);
     const payload = {
       operation,
+      ...resolvedCartId ? { cartId: resolvedCartId } : {},
       cartItems
     };
     const res = await apiClient_default.post(
@@ -208,6 +266,7 @@ var addItemToCart = async ({
     if (token) {
       setToken(token);
     }
+    saveCartIdFromResponse(responseData);
     const addCart = responseData || {};
     console.log("Add To Cart API Response:", addCart);
     return responseData;
@@ -226,9 +285,10 @@ var updateItemQty = async ({
 }) => {
   var _a, _b, _c;
   try {
+    const resolvedCartId = resolveCartId(cartId);
     const payload = {
       operation,
-      cartId,
+      cartId: resolvedCartId,
       cartItems
     };
     const res = await apiClient_default.post(
@@ -240,6 +300,7 @@ var updateItemQty = async ({
     if (token) {
       setToken(token);
     }
+    saveCartIdFromResponse(responseData);
     const updateCart = responseData || {};
     console.log("response from sdk", updateCart);
     return responseData;
@@ -260,9 +321,10 @@ var refreshCart = async ({
 }) => {
   var _a, _b, _c;
   try {
+    const resolvedCartId = resolveCartId(cartId);
     const payload = {
       operation,
-      cartId,
+      cartId: resolvedCartId,
       customerMobileNumber,
       customerName,
       customerEmail
@@ -276,6 +338,7 @@ var refreshCart = async ({
     if (token) {
       setToken(token);
     }
+    saveCartIdFromResponse(responseData);
     const refreshCartResponse = responseData || {};
     console.log("Refresh Cart API Response:", refreshCartResponse);
     return responseData;
@@ -294,9 +357,10 @@ var removeItemFromCart = async ({
 }) => {
   var _a, _b, _c;
   try {
+    const resolvedCartId = resolveCartId(cartId);
     const payload = {
       operation,
-      cartId,
+      cartId: resolvedCartId,
       cartItems
     };
     const res = await apiClient_default.post(
@@ -308,6 +372,7 @@ var removeItemFromCart = async ({
     if (token) {
       setToken(token);
     }
+    saveCartIdFromResponse(responseData);
     const removeCartResponse = responseData || {};
     console.log("Remove Item API Response:", removeCartResponse);
     return responseData;
