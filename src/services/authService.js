@@ -103,6 +103,196 @@ export const register = async ({
 };
 
 /**
+ * Send OTP for mobile verification during registration
+ */
+export const sendRegisterVerifyMobileOtp = async ({
+  mobileNumber,
+  domainName,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-mobile/send-otp",
+    {
+      mobileNumber,
+      domainName,
+    },
+  );
+  return res;
+};
+
+/**
+ * Validate OTP for mobile verification during registration
+ */
+export const validateRegisterVerifyMobileOtp = async ({
+  mobileNumber,
+  domainName,
+  mobileValidationId,
+  mobileOtp,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-mobile/validate-otp",
+    {
+      mobileNumber,
+      domainName,
+      mobileValidationId,
+      mobileOtp,
+    },
+  );
+  return res;
+};
+
+/**
+ * Validate referral/reference code during registration
+ */
+export const validateRegisterReference = async ({
+  mobileNumber,
+  domainName,
+  referenceCode,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/validate-reference",
+    {
+      mobileNumber,
+      domainName,
+      referenceCode,
+    },
+  );
+  return res;
+};
+
+/**
+ * Save registration details after verification
+ */
+export const saveRegisterDetails = async ({
+  mobileNumber,
+  domainName,
+  name,
+  dateOfBirth,
+  email,
+  password,
+}) => {
+  const res = await apiClient.post("/auth-service/ecom/register/save-details", {
+    mobileNumber,
+    domainName,
+    name,
+    dateOfBirth,
+    email,
+    password,
+  });
+  return res;
+};
+
+/**
+ * Send OTP for Aadhaar verification during registration
+ */
+export const sendRegisterVerifyAadhaarOtp = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-aadhaar/send-otp",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber,
+    },
+  );
+  return res;
+};
+
+/**
+ * Validate OTP for Aadhaar verification during registration
+ */
+export const validateRegisterVerifyAadhaarOtp = async ({
+  mobileNumber,
+  domainName,
+  aadhaarValidationId,
+  aadhaarOtp,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-aadhaar/validate-otp",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarValidationId,
+      aadhaarOtp,
+    },
+  );
+  return res;
+};
+
+/**
+ * Save Aadhaar address during registration
+ */
+export const saveRegisterAadhaarAddress = async ({
+  mobileNumber,
+  domainName,
+  saveAadhaarAddress,
+  aadhaarAddress,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/save-aadhaar-address",
+    {
+      mobileNumber,
+      domainName,
+      saveAadhaarAddress,
+      aadhaarAddress,
+    },
+  );
+  return res;
+};
+
+/**
+ * Validate PAN during registration
+ */
+export const validateRegisterPan = async ({
+  mobileNumber,
+  domainName,
+  panNumber,
+}) => {
+  const res = await apiClient.post("/auth-service/ecom/register/validate-pan", {
+    mobileNumber,
+    domainName,
+    panNumber,
+  });
+  return res;
+};
+
+/**
+ * Validate bank account details during registration
+ */
+export const validateRegisterBankAccount = async ({
+  mobileNumber,
+  domainName,
+  bankAccountHolderName,
+  bankAccountNumber,
+  bankIfsc,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/validate-bank-account",
+    {
+      mobileNumber,
+      domainName,
+      bankAccountHolderName,
+      bankAccountNumber,
+      bankIfsc,
+    },
+  );
+  return res;
+};
+
+/**
+ * Register distributor/customer for ecom flow
+ */
+export const registerEcom = async ({ mobileNumber, domainName }) => {
+  const res = await apiClient.post("/auth-service/ecom/register", {
+    mobileNumber,
+    domainName,
+  });
+  return res;
+};
+
+/**
  * Check Tenant API
  */
 export const checkTenant = async (tenantDomain) => {
