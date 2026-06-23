@@ -52,11 +52,21 @@ __export(index_exports, {
   recordOrderPayment: () => recordOrderPayment,
   refreshCart: () => refreshCart,
   register: () => register,
+  registerEcom: () => registerEcom,
   removeItemFromCart: () => removeItemFromCart,
+  saveRegisterAadhaarAddress: () => saveRegisterAadhaarAddress,
+  saveRegisterDetails: () => saveRegisterDetails,
+  sendRegisterVerifyAadhaarOtp: () => sendRegisterVerifyAadhaarOtp,
+  sendRegisterVerifyMobileOtp: () => sendRegisterVerifyMobileOtp,
   setTenantId: () => setTenantId,
   setToken: () => setToken,
   setUserDetails: () => setUserDetails,
-  updateItemQty: () => updateItemQty
+  updateItemQty: () => updateItemQty,
+  validateRegisterBankAccount: () => validateRegisterBankAccount,
+  validateRegisterPan: () => validateRegisterPan,
+  validateRegisterReference: () => validateRegisterReference,
+  validateRegisterVerifyAadhaarOtp: () => validateRegisterVerifyAadhaarOtp,
+  validateRegisterVerifyMobileOtp: () => validateRegisterVerifyMobileOtp
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -207,6 +217,156 @@ var register = async ({
     setUserDetails(user);
   }
   return user;
+};
+var sendRegisterVerifyMobileOtp = async ({
+  mobileNumber,
+  domainName
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-mobile/send-otp",
+    {
+      mobileNumber,
+      domainName
+    }
+  );
+  return res;
+};
+var validateRegisterVerifyMobileOtp = async ({
+  mobileNumber,
+  domainName,
+  mobileValidationId,
+  mobileOtp
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-mobile/validate-otp",
+    {
+      mobileNumber,
+      domainName,
+      mobileValidationId,
+      mobileOtp
+    }
+  );
+  return res;
+};
+var validateRegisterReference = async ({
+  mobileNumber,
+  domainName,
+  referenceCode
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/validate-reference",
+    {
+      mobileNumber,
+      domainName,
+      referenceCode
+    }
+  );
+  return res;
+};
+var saveRegisterDetails = async ({
+  mobileNumber,
+  domainName,
+  name,
+  dateOfBirth,
+  email,
+  password
+}) => {
+  const res = await apiClient_default.post("/auth-service/ecom/register/save-details", {
+    mobileNumber,
+    domainName,
+    name,
+    dateOfBirth,
+    email,
+    password
+  });
+  return res;
+};
+var sendRegisterVerifyAadhaarOtp = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-aadhaar/send-otp",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber
+    }
+  );
+  return res;
+};
+var validateRegisterVerifyAadhaarOtp = async ({
+  mobileNumber,
+  domainName,
+  aadhaarValidationId,
+  aadhaarOtp
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-aadhaar/validate-otp",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarValidationId,
+      aadhaarOtp
+    }
+  );
+  return res;
+};
+var saveRegisterAadhaarAddress = async ({
+  mobileNumber,
+  domainName,
+  saveAadhaarAddress,
+  aadhaarAddress
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/save-aadhaar-address",
+    {
+      mobileNumber,
+      domainName,
+      saveAadhaarAddress,
+      aadhaarAddress
+    }
+  );
+  return res;
+};
+var validateRegisterPan = async ({
+  mobileNumber,
+  domainName,
+  panNumber
+}) => {
+  const res = await apiClient_default.post("/auth-service/ecom/register/validate-pan", {
+    mobileNumber,
+    domainName,
+    panNumber
+  });
+  return res;
+};
+var validateRegisterBankAccount = async ({
+  mobileNumber,
+  domainName,
+  bankAccountHolderName,
+  bankAccountNumber,
+  bankIfsc
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/validate-bank-account",
+    {
+      mobileNumber,
+      domainName,
+      bankAccountHolderName,
+      bankAccountNumber,
+      bankIfsc
+    }
+  );
+  return res;
+};
+var registerEcom = async ({ mobileNumber, domainName }) => {
+  const res = await apiClient_default.post("/auth-service/ecom/register", {
+    mobileNumber,
+    domainName
+  });
+  return res;
 };
 var checkTenant = async (tenantDomain) => {
   var _a;
@@ -777,9 +937,19 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   recordOrderPayment,
   refreshCart,
   register,
+  registerEcom,
   removeItemFromCart,
+  saveRegisterAadhaarAddress,
+  saveRegisterDetails,
+  sendRegisterVerifyAadhaarOtp,
+  sendRegisterVerifyMobileOtp,
   setTenantId,
   setToken,
   setUserDetails,
-  updateItemQty
+  updateItemQty,
+  validateRegisterBankAccount,
+  validateRegisterPan,
+  validateRegisterReference,
+  validateRegisterVerifyAadhaarOtp,
+  validateRegisterVerifyMobileOtp
 });
