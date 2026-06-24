@@ -710,6 +710,35 @@ const extractTokenFromResponse$1 = (res) => {
 };
 
 /**
+ * Fetch customer details
+ */
+const getCustomer = async () => {
+  try {
+    const endpoint = "/customer-service/cws/customer";
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse$1(res);
+    if (token) {
+      setToken(token);
+    }
+
+    const customerResponse = responseData || {};
+    console.log("Customer API Response:", customerResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Customer API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
  * Fetch customer address list
  */
 const getCustomerAddress = async () => {
@@ -1127,4 +1156,4 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 
-export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, clearToken, clearUserDetails, editCustomerAddress, getCategoriesByTenant, getCustomerAddress, getFiltersByTenantAndStore, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyMobileOtp };
+export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, clearToken, clearUserDetails, editCustomerAddress, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyMobileOtp };
