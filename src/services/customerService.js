@@ -15,6 +15,35 @@ const extractTokenFromResponse = (res) => {
 };
 
 /**
+ * Fetch customer details
+ */
+export const getCustomer = async () => {
+  try {
+    const endpoint = "/customer-service/cws/customer";
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    const customerResponse = responseData || {};
+    console.log("Customer API Response:", customerResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Customer API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
  * Fetch customer address list
  */
 export const getCustomerAddress = async () => {

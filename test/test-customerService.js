@@ -1,5 +1,6 @@
 import {
   initClient,
+  getCustomer,
   addCustomerAddress,
   editCustomerAddress,
   getCustomerAddress,
@@ -29,6 +30,16 @@ const run = async () => {
     }
 
     console.log("AUTH TOKEN FOR CUSTOMER TEST:", getToken());
+
+    const customerResponse = await getCustomer();
+    console.log(
+      "GET CUSTOMER RESPONSE:\n",
+      JSON.stringify(customerResponse || {}, null, 2),
+    );
+
+    if (!customerResponse) {
+      throw new Error("getCustomer failed: empty response");
+    }
 
     const addAddressRequest = {
       contactPerson: "Shivani B",

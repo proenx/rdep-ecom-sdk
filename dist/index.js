@@ -36,7 +36,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register")) {
+    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/register")) {
       return res;
     }
     return res.data;
@@ -103,7 +103,7 @@ var getTenantId = () => {
   return null;
 };
 var login = async ({ username, password, domainName }) => {
-  const res = await apiClient_default.post("/auth-service/cws/auth", {
+  const res = await apiClient_default.post("/auth-service/ecom/auth", {
     username,
     password,
     domainName
@@ -542,6 +542,27 @@ var extractTokenFromResponse = (res) => {
   const headers = (res == null ? void 0 : res.headers) || {};
   return headers.authorization || headers.Authorization || headers["x-auth-token"] || headers["X-Auth-Token"] || headers["x-access-token"] || headers["X-Access-Token"] || null;
 };
+var getCustomer = async () => {
+  var _a;
+  try {
+    const endpoint = "/customer-service/cws/customer";
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    const customerResponse = responseData || {};
+    console.log("Customer API Response:", customerResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Customer API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var getCustomerAddress = async () => {
   var _a;
   try {
@@ -851,6 +872,7 @@ export {
   clearUserDetails,
   editCustomerAddress,
   getCategoriesByTenant,
+  getCustomer,
   getCustomerAddress,
   getFiltersByTenantAndStore,
   getProductDetailById,
