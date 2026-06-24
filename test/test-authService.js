@@ -131,7 +131,8 @@ const run = async () => {
     validateRegisterPan({
       mobileNumber,
       domainName: tenantDomain,
-      panNumber: "ABCDE1234F",
+      aadhaarNumber: "123456789012",
+      panNumber: "XXXPX1234A",
     }),
   );
 

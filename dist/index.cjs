@@ -333,11 +333,13 @@ var saveRegisterAadhaarAddress = async ({
 var validateRegisterPan = async ({
   mobileNumber,
   domainName,
+  aadhaarNumber,
   panNumber
 }) => {
   const res = await apiClient_default.post("/auth-service/ecom/register/validate-pan", {
     mobileNumber,
     domainName,
+    aadhaarNumber,
     panNumber
   });
   return res;
