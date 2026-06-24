@@ -36,7 +36,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register")) {
+    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/register")) {
       return res;
     }
     return res.data;
@@ -103,7 +103,7 @@ var getTenantId = () => {
   return null;
 };
 var login = async ({ username, password, domainName }) => {
-  const res = await apiClient_default.post("/auth-service/cws/auth", {
+  const res = await apiClient_default.post("/auth-service/ecom/auth", {
     username,
     password,
     domainName

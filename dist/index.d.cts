@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
   (res) => {
     // Auth APIs need full response to access auth headers
     if (
-      res.config.url.includes("/auth-service/cws/auth") ||
+      res.config.url.includes("/auth-service/ecom/auth") ||
       res.config.url.includes("/auth-service/cws/register")
     ) {
       return res;
@@ -138,7 +138,7 @@ const getTenantId = () => {
  * Login
  */
 const login = async ({ username, password, domainName }) => {
-  const res = await apiClient.post("/auth-service/cws/auth", {
+  const res = await apiClient.post("/auth-service/ecom/auth", {
     username,
     password,
     domainName: domainName,

@@ -54,7 +54,7 @@ export const getTenantId = () => {
  * Login
  */
 export const login = async ({ username, password, domainName }) => {
-  const res = await apiClient.post("/auth-service/cws/auth", {
+  const res = await apiClient.post("/auth-service/ecom/auth", {
     username,
     password,
     domainName: domainName,
