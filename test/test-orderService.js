@@ -2,6 +2,8 @@ import {
   initClient,
   placeOrder,
   recordOrderPayment,
+  checkTransactionStatus,
+  generatePaymentLink,
   setToken,
   getToken,
   login,
@@ -79,7 +81,7 @@ const run = async () => {
     };
 
     const placeOrderResponse = await placeOrder(placeOrderRequest);
-    console.log("PLACE ORDER RESPONSE:", placeOrderResponse);
+    // console.log("PLACE ORDER RESPONSE:", placeOrderResponse);
 
     if (
       !placeOrderResponse ||
@@ -107,11 +109,27 @@ const run = async () => {
     };
 
     const paymentResponse = await recordOrderPayment(paymentRequest);
-    console.log("ORDER PAYMENT RESPONSE:", paymentResponse);
+    // console.log("ORDER PAYMENT RESPONSE:", paymentResponse);
 
     if (!paymentResponse || String(paymentResponse.statusCode) !== "200") {
       throw new Error("recordOrderPayment failed: invalid statusCode");
     }
+
+    const transactionStatusResponse = await checkTransactionStatus(
+      placeOrderResponse.orderId || paymentRequest.orderId,
+    );
+    console.log(
+      "CHECK TRANSACTION STATUS RESPONSE:",
+      JSON.stringify(transactionStatusResponse, null, 2),
+    );
+
+    const paymentLinkResponse = await generatePaymentLink(
+      placeOrderResponse.orderId || paymentRequest.orderId,
+    );
+    console.log(
+      "GENERATE PAYMENT LINK RESPONSE:",
+      JSON.stringify(paymentLinkResponse, null, 2),
+    );
   } catch (e) {
     console.error("ORDER TEST FAILED");
     console.error(e?.response?.data || e.message);

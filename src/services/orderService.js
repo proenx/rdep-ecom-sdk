@@ -30,14 +30,14 @@ export const placeOrder = async (orderRequest = {}) => {
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;
-    console.log("Place Order API:", res);
+    // console.log("Place Order API:", res);
     const token = extractTokenFromResponse(res);
     if (token) {
       setToken(token);
     }
 
     const placeOrderResponse = responseData || {};
-    console.log("Place Order API Response:", placeOrderResponse);
+    // console.log("Place Order API Response:", placeOrderResponse);
 
     return responseData;
   } catch (error) {
@@ -75,7 +75,7 @@ export const recordOrderPayment = async (paymentRequest = {}) => {
     }
 
     const paymentResponse = responseData || {};
-    console.log("Order Payment API Response:", paymentResponse);
+    // console.log("Order Payment API Response:", paymentResponse);
 
     return responseData;
   } catch (error) {
@@ -110,12 +110,91 @@ export const cancelOrderBySku = async (sku) => {
       setToken(token);
     }
     const cancelOrderResponse = responseData || {};
-    console.log("Cancel Order API Response:", cancelOrderResponse);
+    // console.log("Cancel Order API Response:", cancelOrderResponse);
 
     return responseData;
   } catch (error) {
     console.error(
       "Cancel Order API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Check transaction status
+ */
+export const checkTransactionStatus = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("checkTransactionStatus requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/order/checkTransactionStatus/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    const transactionStatusResponse = responseData || {};
+    console.log(
+      "Check Transaction Status API Response:",
+      JSON.stringify(transactionStatusResponse, null, 2),
+    );
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Check Transaction Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Generate payment link
+ */
+export const generatePaymentLink = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("generatePaymentLink requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/order/generatePaymentLink/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+    console.log(
+      "Generate Payment Link API Response:",
+      JSON.stringify(responseData || {}, null, 2),
+    );
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    const paymentLinkResponse = responseData || {};
+    console.log("Generate Payment Link API Response:", paymentLinkResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Generate Payment Link API Error:",
       error?.response?.data || error.message,
     );
 
