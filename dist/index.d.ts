@@ -209,7 +209,8 @@ const sendRegisterVerifyMobileOtp = async ({
 const validateRegisterVerifyMobileOtp = async ({
   mobileNumber,
   domainName,
-  mobileValidationId,
+  aadhaarValidationId,
+  aadhaarNumber,
   mobileOtp,
 }) => {
   const res = await apiClient.post(
@@ -217,7 +218,8 @@ const validateRegisterVerifyMobileOtp = async ({
     {
       mobileNumber,
       domainName,
-      mobileValidationId,
+      aadhaarValidationId,
+      aadhaarNumber,
       mobileOtp,
     },
   );
@@ -1235,5 +1237,4 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 
- export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, editCustomerAddress, generatePaymentLink, getCategoriesByTenant, getCustomerAddress, getFiltersByTenantAndStore, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyMobileOtp };
-
+export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, editCustomerAddress, generatePaymentLink, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyMobileOtp };
