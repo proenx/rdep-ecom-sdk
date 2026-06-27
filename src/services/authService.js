@@ -125,7 +125,8 @@ export const sendRegisterVerifyMobileOtp = async ({
 export const validateRegisterVerifyMobileOtp = async ({
   mobileNumber,
   domainName,
-  mobileValidationId,
+  aadhaarValidationId,
+  aadhaarNumber,
   mobileOtp,
 }) => {
   const res = await apiClient.post(
@@ -133,7 +134,8 @@ export const validateRegisterVerifyMobileOtp = async ({
     {
       mobileNumber,
       domainName,
-      mobileValidationId,
+      aadhaarValidationId,
+      aadhaarNumber,
       mobileOtp,
     },
   );
