@@ -69,9 +69,8 @@ const run = async () => {
     validateRegisterVerifyMobileOtp({
       mobileNumber,
       domainName: tenantDomain,
-      aadhaarValidationId: "56abf345-43bc-4609-bb82-c6c4d31dd933",
+      mobileValidationId: "56abf345-43bc-4609-bb82-c6c4d31dd933",
       mobileOtp: "1949",
-      aadhaarNumber: "123456789012",
     }),
   );
 
