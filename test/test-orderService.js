@@ -5,6 +5,7 @@ import {
   checkTransactionStatus,
   generatePaymentLink,
   getOrderList,
+  getOrderById,
   setToken,
   getToken,
   login,
@@ -99,6 +100,16 @@ const run = async () => {
       String(placeOrderResponse.statusCode) !== "200"
     ) {
       throw new Error("placeOrder failed: invalid statusCode");
+    }
+
+    const orderByIdResponse = await getOrderById(placeOrderResponse.orderId);
+    console.log(
+      "ORDER BY ID RESPONSE:",
+      JSON.stringify(orderByIdResponse, null, 2),
+    );
+
+    if (!orderByIdResponse) {
+      throw new Error("getOrderById failed: empty response");
     }
 
     const paymentRequest = {
