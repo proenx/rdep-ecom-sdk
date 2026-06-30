@@ -4,6 +4,8 @@ import {
   recordOrderPayment,
   checkTransactionStatus,
   generatePaymentLink,
+  getOrderList,
+  getOrderById,
   setToken,
   getToken,
   login,
@@ -29,6 +31,16 @@ const run = async () => {
     }
 
     console.log("Token", getToken());
+
+    const orderListResponse = await getOrderList();
+    console.log(
+      "ORDER LIST RESPONSE:",
+      JSON.stringify(orderListResponse, null, 2),
+    );
+
+    if (!orderListResponse) {
+      throw new Error("getOrderList failed: empty response");
+    }
 
     const placeOrderRequest = {
       cartId: 14855,
@@ -88,6 +100,16 @@ const run = async () => {
       String(placeOrderResponse.statusCode) !== "200"
     ) {
       throw new Error("placeOrder failed: invalid statusCode");
+    }
+
+    const orderByIdResponse = await getOrderById(placeOrderResponse.orderId);
+    console.log(
+      "ORDER BY ID RESPONSE:",
+      JSON.stringify(orderByIdResponse, null, 2),
+    );
+
+    if (!orderByIdResponse) {
+      throw new Error("getOrderById failed: empty response");
     }
 
     const paymentRequest = {
