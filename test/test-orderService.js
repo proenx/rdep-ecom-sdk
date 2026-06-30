@@ -4,6 +4,7 @@ import {
   recordOrderPayment,
   checkTransactionStatus,
   generatePaymentLink,
+  getOrderList,
   setToken,
   getToken,
   login,
@@ -29,6 +30,16 @@ const run = async () => {
     }
 
     console.log("Token", getToken());
+
+    const orderListResponse = await getOrderList();
+    console.log(
+      "ORDER LIST RESPONSE:",
+      JSON.stringify(orderListResponse, null, 2),
+    );
+
+    if (!orderListResponse) {
+      throw new Error("getOrderList failed: empty response");
+    }
 
     const placeOrderRequest = {
       cartId: 14855,

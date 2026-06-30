@@ -201,3 +201,33 @@ export const generatePaymentLink = async (orderId) => {
     throw error;
   }
 };
+
+/**
+ * Fetch order list
+ */
+export const getOrderList = async () => {
+  try {
+    const endpoint = "/order-service/cws/order/list";
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    const orderListResponse = responseData || {};
+    console.log("Order List API Response:", orderListResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order List API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};

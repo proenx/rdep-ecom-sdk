@@ -42,6 +42,7 @@ __export(index_exports, {
   getCustomer: () => getCustomer,
   getCustomerAddress: () => getCustomerAddress,
   getFiltersByTenantAndStore: () => getFiltersByTenantAndStore,
+  getOrderList: () => getOrderList,
   getProductDetailById: () => getProductDetailById,
   getProductsByTenantAndStore: () => getProductsByTenantAndStore,
   getTenantId: () => getTenantId,
@@ -856,6 +857,27 @@ var generatePaymentLink = async (orderId) => {
     throw error;
   }
 };
+var getOrderList = async () => {
+  var _a;
+  try {
+    const endpoint = "/order-service/cws/order/list";
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    const orderListResponse = responseData || {};
+    console.log("Order List API Response:", orderListResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order List API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 
 // src/services/productService.js
 var resolveTenantId = async (tenantId) => {
@@ -1008,6 +1030,7 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   getCustomer,
   getCustomerAddress,
   getFiltersByTenantAndStore,
+  getOrderList,
   getProductDetailById,
   getProductsByTenantAndStore,
   getTenantId,
