@@ -106,14 +106,51 @@ export const register = async ({
  * Send OTP for mobile verification during registration
  */
 export const sendRegisterVerifyMobileOtp = async ({
+  email,
   mobileNumber,
   domainName,
 }) => {
   const res = await apiClient.post(
     "/auth-service/ecom/register/verify-mobile/send-otp",
     {
+      email,
       mobileNumber,
       domainName,
+    },
+  );
+  return res;
+};
+
+/**
+ * Send OTP for email verification during registration
+ */
+export const sendRegisterVerifyEmailOtp = async ({ email, domainName }) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-email/send-otp",
+    {
+      email,
+      domainName,
+    },
+  );
+  return res;
+};
+
+/**
+ * Validate OTP for email verification during registration
+ */
+export const validateRegisterVerifyEmailOtp = async ({
+  email,
+  domainName,
+  emailValidationId,
+  emailOtp,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-email/validate-otp",
+    {
+      email,
+      domainName,
+      emailValidationId,
+      emailOtp,
     },
   );
   return res;
@@ -123,6 +160,7 @@ export const sendRegisterVerifyMobileOtp = async ({
  * Validate OTP for mobile verification during registration
  */
 export const validateRegisterVerifyMobileOtp = async ({
+  email,
   mobileNumber,
   domainName,
   mobileValidationId,
@@ -131,6 +169,7 @@ export const validateRegisterVerifyMobileOtp = async ({
   const res = await apiClient.post(
     "/auth-service/ecom/register/verify-mobile/validate-otp",
     {
+      email,
       mobileNumber,
       domainName,
       mobileValidationId,
@@ -144,14 +183,14 @@ export const validateRegisterVerifyMobileOtp = async ({
  * Validate referral/reference code during registration
  */
 export const validateRegisterReference = async ({
-  mobileNumber,
+  email,
   domainName,
   referenceCode,
 }) => {
   const res = await apiClient.post(
     "/auth-service/ecom/register/validate-reference",
     {
-      mobileNumber,
+      email,
       domainName,
       referenceCode,
     },
@@ -206,6 +245,7 @@ export const sendRegisterVerifyAadhaarOtp = async ({
 export const validateRegisterVerifyAadhaarOtp = async ({
   mobileNumber,
   domainName,
+  aadhaarNumber,
   aadhaarValidationId,
   aadhaarOtp,
 }) => {
@@ -214,6 +254,7 @@ export const validateRegisterVerifyAadhaarOtp = async ({
     {
       mobileNumber,
       domainName,
+      aadhaarNumber,
       aadhaarValidationId,
       aadhaarOtp,
     },

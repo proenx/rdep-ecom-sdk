@@ -4,6 +4,8 @@ import {
   register,
   registerEcom,
   sendRegisterVerifyMobileOtp,
+  sendRegisterVerifyEmailOtp,
+  validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp,
   validateRegisterReference,
   saveRegisterDetails,
@@ -60,25 +62,43 @@ const run = async () => {
 
   await safeCall("sendRegisterVerifyMobileOtp", () =>
     sendRegisterVerifyMobileOtp({
+      email: "pallab.s@proenx.com",
       mobileNumber,
       domainName: tenantDomain,
+    }),
+  );
+
+  await safeCall("sendRegisterVerifyEmailOtp", () =>
+    sendRegisterVerifyEmailOtp({
+      email: "pallab.s@proenx.com",
+      domainName: tenantDomain,
+    }),
+  );
+
+  await safeCall("validateRegisterVerifyEmailOtp", () =>
+    validateRegisterVerifyEmailOtp({
+      email: "pallab.s@proenx.com",
+      domainName: tenantDomain,
+      emailValidationId: "db05c79d-c543-4c64-a3f1-5d1ab7c9fbb6",
+      emailOtp: "8600",
     }),
   );
 
   await safeCall("validateRegisterVerifyMobileOtp", () =>
     validateRegisterVerifyMobileOtp({
+      email: "pallab.s@proenx.com",
       mobileNumber,
       domainName: tenantDomain,
-      mobileValidationId: "56abf345-43bc-4609-bb82-c6c4d31dd933",
-      mobileOtp: "1949",
+      mobileValidationId: "edeb3952-a1a0-4dc0-842b-c069be5da0e8",
+      mobileOtp: "1046",
     }),
   );
 
   await safeCall("validateRegisterReference", () =>
     validateRegisterReference({
-      mobileNumber,
+      email: "pallab.s@proenx.com",
       domainName: tenantDomain,
-      referenceCode: "IBA0002",
+      referenceCode: "BA001757",
     }),
   );
 
@@ -105,7 +125,8 @@ const run = async () => {
     validateRegisterVerifyAadhaarOtp({
       mobileNumber,
       domainName: tenantDomain,
-      aadhaarValidationId: "44c43ac9-7429-44b1-a2c6-fb5d76f3fc50",
+      aadhaarNumber: "123456789012",
+      aadhaarValidationId: "1234567",
       aadhaarOtp: "121212",
     }),
   );

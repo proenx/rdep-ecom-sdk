@@ -190,14 +190,51 @@ const register = async ({
  * Send OTP for mobile verification during registration
  */
 const sendRegisterVerifyMobileOtp = async ({
+  email,
   mobileNumber,
   domainName,
 }) => {
   const res = await apiClient.post(
     "/auth-service/ecom/register/verify-mobile/send-otp",
     {
+      email,
       mobileNumber,
       domainName,
+    },
+  );
+  return res;
+};
+
+/**
+ * Send OTP for email verification during registration
+ */
+const sendRegisterVerifyEmailOtp = async ({ email, domainName }) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-email/send-otp",
+    {
+      email,
+      domainName,
+    },
+  );
+  return res;
+};
+
+/**
+ * Validate OTP for email verification during registration
+ */
+const validateRegisterVerifyEmailOtp = async ({
+  email,
+  domainName,
+  emailValidationId,
+  emailOtp,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-email/validate-otp",
+    {
+      email,
+      domainName,
+      emailValidationId,
+      emailOtp,
     },
   );
   return res;
@@ -207,6 +244,7 @@ const sendRegisterVerifyMobileOtp = async ({
  * Validate OTP for mobile verification during registration
  */
 const validateRegisterVerifyMobileOtp = async ({
+  email,
   mobileNumber,
   domainName,
   mobileValidationId,
@@ -215,6 +253,7 @@ const validateRegisterVerifyMobileOtp = async ({
   const res = await apiClient.post(
     "/auth-service/ecom/register/verify-mobile/validate-otp",
     {
+      email,
       mobileNumber,
       domainName,
       mobileValidationId,
@@ -228,14 +267,14 @@ const validateRegisterVerifyMobileOtp = async ({
  * Validate referral/reference code during registration
  */
 const validateRegisterReference = async ({
-  mobileNumber,
+  email,
   domainName,
   referenceCode,
 }) => {
   const res = await apiClient.post(
     "/auth-service/ecom/register/validate-reference",
     {
-      mobileNumber,
+      email,
       domainName,
       referenceCode,
     },
@@ -290,6 +329,7 @@ const sendRegisterVerifyAadhaarOtp = async ({
 const validateRegisterVerifyAadhaarOtp = async ({
   mobileNumber,
   domainName,
+  aadhaarNumber,
   aadhaarValidationId,
   aadhaarOtp,
 }) => {
@@ -298,6 +338,7 @@ const validateRegisterVerifyAadhaarOtp = async ({
     {
       mobileNumber,
       domainName,
+      aadhaarNumber,
       aadhaarValidationId,
       aadhaarOtp,
     },
@@ -1300,4 +1341,4 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 
-export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, editCustomerAddress, generatePaymentLink, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyMobileOtp };
+export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, editCustomerAddress, generatePaymentLink, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };
