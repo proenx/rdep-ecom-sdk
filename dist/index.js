@@ -329,6 +329,14 @@ var registerEcom = async ({ mobileNumber, domainName }) => {
     mobileNumber,
     domainName
   });
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  const user = (res == null ? void 0 : res.data) || {};
+  if (user) {
+    setUserDetails(user);
+  }
   return res;
 };
 var checkTenant = async (tenantDomain) => {
