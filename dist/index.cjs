@@ -62,6 +62,7 @@ __export(index_exports, {
   saveRegisterAadhaarAddress: () => saveRegisterAadhaarAddress,
   saveRegisterDetails: () => saveRegisterDetails,
   sendRegisterVerifyAadhaarOtp: () => sendRegisterVerifyAadhaarOtp,
+  sendRegisterVerifyEmailOtp: () => sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp: () => sendRegisterVerifyMobileOtp,
   setTenantId: () => setTenantId,
   setToken: () => setToken,
@@ -71,6 +72,7 @@ __export(index_exports, {
   validateRegisterPan: () => validateRegisterPan,
   validateRegisterReference: () => validateRegisterReference,
   validateRegisterVerifyAadhaarOtp: () => validateRegisterVerifyAadhaarOtp,
+  validateRegisterVerifyEmailOtp: () => validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp: () => validateRegisterVerifyMobileOtp
 });
 module.exports = __toCommonJS(index_exports);
@@ -224,19 +226,49 @@ var register = async ({
   return user;
 };
 var sendRegisterVerifyMobileOtp = async ({
+  email,
   mobileNumber,
   domainName
 }) => {
   const res = await apiClient_default.post(
     "/auth-service/ecom/register/verify-mobile/send-otp",
     {
+      email,
       mobileNumber,
       domainName
     }
   );
   return res;
 };
+var sendRegisterVerifyEmailOtp = async ({ email, domainName }) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-email/send-otp",
+    {
+      email,
+      domainName
+    }
+  );
+  return res;
+};
+var validateRegisterVerifyEmailOtp = async ({
+  email,
+  domainName,
+  emailValidationId,
+  emailOtp
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-email/validate-otp",
+    {
+      email,
+      domainName,
+      emailValidationId,
+      emailOtp
+    }
+  );
+  return res;
+};
 var validateRegisterVerifyMobileOtp = async ({
+  email,
   mobileNumber,
   domainName,
   mobileValidationId,
@@ -245,6 +277,7 @@ var validateRegisterVerifyMobileOtp = async ({
   const res = await apiClient_default.post(
     "/auth-service/ecom/register/verify-mobile/validate-otp",
     {
+      email,
       mobileNumber,
       domainName,
       mobileValidationId,
@@ -254,14 +287,14 @@ var validateRegisterVerifyMobileOtp = async ({
   return res;
 };
 var validateRegisterReference = async ({
-  mobileNumber,
+  email,
   domainName,
   referenceCode
 }) => {
   const res = await apiClient_default.post(
     "/auth-service/ecom/register/validate-reference",
     {
-      mobileNumber,
+      email,
       domainName,
       referenceCode
     }
@@ -304,6 +337,7 @@ var sendRegisterVerifyAadhaarOtp = async ({
 var validateRegisterVerifyAadhaarOtp = async ({
   mobileNumber,
   domainName,
+  aadhaarNumber,
   aadhaarValidationId,
   aadhaarOtp
 }) => {
@@ -312,6 +346,7 @@ var validateRegisterVerifyAadhaarOtp = async ({
     {
       mobileNumber,
       domainName,
+      aadhaarNumber,
       aadhaarValidationId,
       aadhaarOtp
     }
@@ -1076,6 +1111,7 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   saveRegisterAadhaarAddress,
   saveRegisterDetails,
   sendRegisterVerifyAadhaarOtp,
+  sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp,
   setTenantId,
   setToken,
@@ -1085,5 +1121,6 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   validateRegisterPan,
   validateRegisterReference,
   validateRegisterVerifyAadhaarOtp,
+  validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp
 });
