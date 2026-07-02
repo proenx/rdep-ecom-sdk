@@ -332,6 +332,15 @@ export const registerEcom = async ({ mobileNumber, domainName }) => {
     mobileNumber,
     domainName,
   });
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+
   return res;
 };
 
