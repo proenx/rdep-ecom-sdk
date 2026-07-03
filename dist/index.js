@@ -36,7 +36,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/register")) {
+    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register")) {
       return res;
     }
     return res.data;
@@ -102,8 +102,24 @@ var getTenantId = () => {
   }
   return null;
 };
-var login = async ({ username, password, domainName }) => {
+var ecomLogin = async ({ username, password, domainName }) => {
   const res = await apiClient_default.post("/auth-service/ecom/auth", {
+    username,
+    password,
+    domainName
+  });
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  const user = (res == null ? void 0 : res.data) || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+var customerLogin = async ({ username, password, domainName }) => {
+  const res = await apiClient_default.post("/auth-service/cws/auth", {
     username,
     password,
     domainName
@@ -1013,6 +1029,8 @@ export {
   checkTransactionStatus,
   clearToken,
   clearUserDetails,
+  customerLogin,
+  ecomLogin,
   editCustomerAddress,
   generatePaymentLink,
   getCategoriesByTenant,
@@ -1028,7 +1046,6 @@ export {
   getToken,
   getUserDetails,
   initClient,
-  login,
   logout,
   placeOrder,
   recordOrderPayment,

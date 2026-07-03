@@ -24,6 +24,7 @@ apiClient.interceptors.response.use(
     // Auth APIs need full response to access auth headers
     if (
       res.config.url.includes("/auth-service/ecom/auth") ||
+      res.config.url.includes("/auth-service/cws/auth") ||
       res.config.url.includes("/auth-service/cws/register")
     ) {
       return res;

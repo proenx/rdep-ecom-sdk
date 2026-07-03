@@ -1,6 +1,7 @@
 import {
   initClient,
-  login,
+  ecomLogin,
+  customerLogin,
   register,
   registerEcom,
   sendRegisterVerifyMobileOtp,
@@ -49,8 +50,16 @@ const run = async () => {
   setTenantId("420");
   console.log("getTenantId after setTenantId", getTenantId());
 
-  await safeCall("login", () =>
-    login({
+  await safeCall("ecomLogin", () =>
+    ecomLogin({
+      username: "BA001757",
+      password: "123456",
+      domainName: tenantDomain,
+    }),
+  );
+
+  await safeCall("customerLogin", () =>
+    customerLogin({
       username: "9886082728",
       password: "123456",
       domainName: tenantDomain,
