@@ -182,6 +182,32 @@ export const validateRegisterOtp = async ({
 };
 
 /**
+ * Resend OTP for CWS registration
+ */
+export const resendRegisterOtp = async ({
+  email,
+  mobileNumber,
+  domainName,
+}) => {
+  const res = await apiClient.post("/auth-service/cws/register/resendOTP", {
+    email,
+    mobileNumber,
+    domainName,
+  });
+
+  const transactionId =
+    res?.data?.transactionId ||
+    res?.data?.registerResponse?.transactionId ||
+    res?.transactionId;
+
+  if (transactionId) {
+    currentRegisterTransactionId = String(transactionId);
+  }
+
+  return res?.data || res;
+};
+
+/**
  * Send OTP for mobile verification during registration
  */
 export const sendRegisterVerifyMobileOtp = async ({

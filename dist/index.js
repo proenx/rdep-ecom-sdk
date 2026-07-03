@@ -204,6 +204,23 @@ var validateRegisterOtp = async ({
   }
   return user;
 };
+var resendRegisterOtp = async ({
+  email,
+  mobileNumber,
+  domainName
+}) => {
+  var _a, _b, _c;
+  const res = await apiClient_default.post("/auth-service/cws/register/resendOTP", {
+    email,
+    mobileNumber,
+    domainName
+  });
+  const transactionId = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.transactionId) || ((_c = (_b = res == null ? void 0 : res.data) == null ? void 0 : _b.registerResponse) == null ? void 0 : _c.transactionId) || (res == null ? void 0 : res.transactionId);
+  if (transactionId) {
+    currentRegisterTransactionId = String(transactionId);
+  }
+  return (res == null ? void 0 : res.data) || res;
+};
 var sendRegisterVerifyMobileOtp = async ({
   email,
   mobileNumber,
@@ -1098,6 +1115,7 @@ export {
   register,
   registerEcom,
   removeItemFromCart,
+  resendRegisterOtp,
   saveRegisterAadhaarAddress,
   saveRegisterDetails,
   sendRegisterVerifyAadhaarOtp,

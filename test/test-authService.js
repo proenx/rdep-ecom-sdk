@@ -16,6 +16,7 @@ import {
   validateRegisterPan,
   validateRegisterBankAccount,
   validateRegisterOtp,
+  resendRegisterOtp,
   getRegisterTransactionId,
   setTenantId,
   getTenantId,
@@ -214,6 +215,14 @@ const run = async () => {
       domainName: "ecom-retail.qa.rdep.io",
       transactionId: "4b8c2808-c284-4ca6-badc-33712adb03d6",
       otp: "5031",
+    }),
+  );
+
+  await safeCall("resendRegisterOtp", () =>
+    resendRegisterOtp({
+      email: "shivani.b@proenx.com",
+      mobileNumber: "9834050349",
+      domainName: "ecom-retail.qa.rdep.io",
     }),
   );
 
