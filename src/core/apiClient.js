@@ -25,7 +25,8 @@ apiClient.interceptors.response.use(
     if (
       res.config.url.includes("/auth-service/ecom/auth") ||
       res.config.url.includes("/auth-service/cws/auth") ||
-      res.config.url.includes("/auth-service/cws/register")
+      res.config.url.includes("/auth-service/cws/register") ||
+      res.config.url.includes("/auth-service/ecom/register")
     ) {
       return res;
     }

@@ -356,12 +356,12 @@ export const registerEcom = async ({ mobileNumber, domainName }) => {
   if (token) {
     setToken(token);
   }
-  const user = res?.data || {};
+  const user = res?.data?.loginResponse || {};
   if (user) {
     setUserDetails(user);
   }
 
-  return res;
+  return user;
 };
 
 /**

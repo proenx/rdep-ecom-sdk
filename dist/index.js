@@ -36,7 +36,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register")) {
+    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register") || res.config.url.includes("/auth-service/ecom/register")) {
       return res;
     }
     return res.data;
@@ -341,6 +341,7 @@ var validateRegisterBankAccount = async ({
   return res;
 };
 var registerEcom = async ({ mobileNumber, domainName }) => {
+  var _a;
   const res = await apiClient_default.post("/auth-service/ecom/register", {
     mobileNumber,
     domainName
@@ -349,11 +350,11 @@ var registerEcom = async ({ mobileNumber, domainName }) => {
   if (token) {
     setToken(token);
   }
-  const user = (res == null ? void 0 : res.data) || {};
+  const user = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.loginResponse) || {};
   if (user) {
     setUserDetails(user);
   }
-  return res;
+  return user;
 };
 var checkTenant = async (tenantDomain) => {
   var _a;
