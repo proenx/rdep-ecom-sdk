@@ -175,8 +175,12 @@ var register = async ({
   return user;
 };
 var validateRegisterOtp = async ({
+  firstName,
+  middleName,
+  lastName,
   email,
   mobileNumber,
+  password,
   domainName,
   transactionId,
   otp
@@ -188,8 +192,12 @@ var validateRegisterOtp = async ({
     );
   }
   const res = await apiClient_default.post("/auth-service/cws/register/validateOTP", {
+    firstName,
+    middleName,
+    lastName,
     email,
     mobileNumber,
+    password,
     domainName,
     transactionId: resolvedTransactionId,
     otp

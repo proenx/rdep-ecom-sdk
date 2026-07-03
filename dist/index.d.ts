@@ -231,8 +231,12 @@ const register = async ({
  * Validate OTP for CWS registration
  */
 const validateRegisterOtp = async ({
+  firstName,
+  middleName,
+  lastName,
   email,
   mobileNumber,
+  password,
   domainName,
   transactionId,
   otp,
@@ -247,8 +251,12 @@ const validateRegisterOtp = async ({
   }
 
   const res = await apiClient.post("/auth-service/cws/register/validateOTP", {
+    firstName,
+    middleName,
+    lastName,
     email,
     mobileNumber,
+    password,
     domainName,
     transactionId: resolvedTransactionId,
     otp,
