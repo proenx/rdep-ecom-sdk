@@ -47,7 +47,8 @@ apiClient.interceptors.response.use(
     if (
       res.config.url.includes("/auth-service/ecom/auth") ||
       res.config.url.includes("/auth-service/cws/auth") ||
-      res.config.url.includes("/auth-service/cws/register")
+      res.config.url.includes("/auth-service/cws/register") ||
+      res.config.url.includes("/auth-service/ecom/register")
     ) {
       return res;
     }
@@ -441,12 +442,12 @@ const registerEcom = async ({ mobileNumber, domainName }) => {
   if (token) {
     setToken(token);
   }
-  const user = res?.data || {};
+  const user = res?.data?.loginResponse || {};
   if (user) {
     setUserDetails(user);
   }
 
-  return res;
+  return user;
 };
 
 /**
