@@ -46,6 +46,7 @@ apiClient.interceptors.response.use(
     // Auth APIs need full response to access auth headers
     if (
       res.config.url.includes("/auth-service/ecom/auth") ||
+      res.config.url.includes("/auth-service/cws/auth") ||
       res.config.url.includes("/auth-service/cws/register")
     ) {
       return res;
@@ -137,8 +138,28 @@ const getTenantId = () => {
 /**
  * Login
  */
-const login = async ({ username, password, domainName }) => {
+const ecomLogin = async ({ username, password, domainName }) => {
   const res = await apiClient.post("/auth-service/ecom/auth", {
+    username,
+    password,
+    domainName: domainName,
+  });
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+
+/**
+ * Customer Login
+ */
+const customerLogin = async ({ username, password, domainName }) => {
+  const res = await apiClient.post("/auth-service/cws/auth", {
     username,
     password,
     domainName: domainName,
@@ -1350,4 +1371,4 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 
-export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, editCustomerAddress, generatePaymentLink, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };
+export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };

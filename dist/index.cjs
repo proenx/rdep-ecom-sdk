@@ -36,6 +36,8 @@ __export(index_exports, {
   checkTransactionStatus: () => checkTransactionStatus,
   clearToken: () => clearToken,
   clearUserDetails: () => clearUserDetails,
+  customerLogin: () => customerLogin,
+  ecomLogin: () => ecomLogin,
   editCustomerAddress: () => editCustomerAddress,
   generatePaymentLink: () => generatePaymentLink,
   getCategoriesByTenant: () => getCategoriesByTenant,
@@ -51,7 +53,6 @@ __export(index_exports, {
   getToken: () => getToken,
   getUserDetails: () => getUserDetails,
   initClient: () => initClient,
-  login: () => login,
   logout: () => logout,
   placeOrder: () => placeOrder,
   recordOrderPayment: () => recordOrderPayment,
@@ -115,7 +116,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/register")) {
+    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register")) {
       return res;
     }
     return res.data;
@@ -181,8 +182,24 @@ var getTenantId = () => {
   }
   return null;
 };
-var login = async ({ username, password, domainName }) => {
+var ecomLogin = async ({ username, password, domainName }) => {
   const res = await apiClient_default.post("/auth-service/ecom/auth", {
+    username,
+    password,
+    domainName
+  });
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  const user = (res == null ? void 0 : res.data) || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+var customerLogin = async ({ username, password, domainName }) => {
+  const res = await apiClient_default.post("/auth-service/cws/auth", {
     username,
     password,
     domainName
@@ -1093,6 +1110,8 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   checkTransactionStatus,
   clearToken,
   clearUserDetails,
+  customerLogin,
+  ecomLogin,
   editCustomerAddress,
   generatePaymentLink,
   getCategoriesByTenant,
@@ -1108,7 +1127,6 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   getToken,
   getUserDetails,
   initClient,
-  login,
   logout,
   placeOrder,
   recordOrderPayment,
