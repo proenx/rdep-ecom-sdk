@@ -21,8 +21,13 @@ apiClient.interceptors.request.use((config) => {
 // Handle responses globally
 apiClient.interceptors.response.use(
   (res) => {
-    // Login API → return full response
-    if (res.config.url.includes("/auth-service/ui/auth")) {
+    // Auth APIs need full response to access auth headers
+    if (
+      res.config.url.includes("/auth-service/ecom/auth") ||
+      res.config.url.includes("/auth-service/cws/auth") ||
+      res.config.url.includes("/auth-service/cws/register") ||
+      res.config.url.includes("/auth-service/ecom/register")
+    ) {
       return res;
     }
     // Other APIs → return only data
