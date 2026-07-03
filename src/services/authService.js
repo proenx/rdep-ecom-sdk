@@ -3,6 +3,7 @@ import { setToken, clearToken } from "../core/tokenManager.js";
 import { setUserDetails, clearUserDetails } from "../core/userDetails.js";
 
 let currentTenantId = null;
+let currentRegisterTransactionId = null;
 
 const extractToken = (res) => {
   const headers = res?.headers || {};
@@ -45,6 +46,14 @@ export const getTenantId = () => {
 
   if (typeof process !== "undefined" && process?.env?.RDEP_TENANT_ID) {
     return String(process.env.RDEP_TENANT_ID);
+  }
+
+  return null;
+};
+
+export const getRegisterTransactionId = () => {
+  if (currentRegisterTransactionId) {
+    return currentRegisterTransactionId;
   }
 
   return null;
@@ -115,11 +124,87 @@ export const register = async ({
   if (token) {
     setToken(token);
   }
+
+  const transactionId =
+    res?.data?.transactionId ||
+    res?.data?.registerResponse?.transactionId ||
+    res?.transactionId;
+
+  if (transactionId) {
+    currentRegisterTransactionId = String(transactionId);
+  }
+
   const user = res?.data || {};
   if (user) {
     setUserDetails(user);
   }
   return user;
+};
+
+/**
+ * Validate OTP for CWS registration
+ */
+export const validateRegisterOtp = async ({
+  email,
+  mobileNumber,
+  domainName,
+  transactionId,
+  otp,
+}) => {
+  const resolvedTransactionId =
+    transactionId || currentRegisterTransactionId || null;
+
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call register first or pass transactionId explicitly.",
+    );
+  }
+
+  const res = await apiClient.post("/auth-service/cws/register/validateOTP", {
+    email,
+    mobileNumber,
+    domainName,
+    transactionId: resolvedTransactionId,
+    otp,
+  });
+
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+
+  const user = res?.data || res || {};
+  if (user) {
+    setUserDetails(user);
+  }
+
+  return user;
+};
+
+/**
+ * Resend OTP for CWS registration
+ */
+export const resendRegisterOtp = async ({
+  email,
+  mobileNumber,
+  domainName,
+}) => {
+  const res = await apiClient.post("/auth-service/cws/register/resendOTP", {
+    email,
+    mobileNumber,
+    domainName,
+  });
+
+  const transactionId =
+    res?.data?.transactionId ||
+    res?.data?.registerResponse?.transactionId ||
+    res?.transactionId;
+
+  if (transactionId) {
+    currentRegisterTransactionId = String(transactionId);
+  }
+
+  return res?.data || res;
 };
 
 /**
@@ -420,5 +505,6 @@ export const logout = async () => {
     clearToken();
     clearUserDetails();
     currentTenantId = null;
+    currentRegisterTransactionId = null;
   }
 };

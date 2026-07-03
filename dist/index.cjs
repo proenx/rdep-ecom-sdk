@@ -48,6 +48,7 @@ __export(index_exports, {
   getOrderList: () => getOrderList,
   getProductDetailById: () => getProductDetailById,
   getProductsByTenantAndStore: () => getProductsByTenantAndStore,
+  getRegisterTransactionId: () => getRegisterTransactionId,
   getTenantId: () => getTenantId,
   getTenantIdByDomain: () => getTenantIdByDomain,
   getToken: () => getToken,
@@ -60,6 +61,7 @@ __export(index_exports, {
   register: () => register,
   registerEcom: () => registerEcom,
   removeItemFromCart: () => removeItemFromCart,
+  resendRegisterOtp: () => resendRegisterOtp,
   saveRegisterAadhaarAddress: () => saveRegisterAadhaarAddress,
   saveRegisterDetails: () => saveRegisterDetails,
   sendRegisterVerifyAadhaarOtp: () => sendRegisterVerifyAadhaarOtp,
@@ -70,6 +72,7 @@ __export(index_exports, {
   setUserDetails: () => setUserDetails,
   updateItemQty: () => updateItemQty,
   validateRegisterBankAccount: () => validateRegisterBankAccount,
+  validateRegisterOtp: () => validateRegisterOtp,
   validateRegisterPan: () => validateRegisterPan,
   validateRegisterReference: () => validateRegisterReference,
   validateRegisterVerifyAadhaarOtp: () => validateRegisterVerifyAadhaarOtp,
@@ -156,6 +159,7 @@ var clearUserDetails = () => {
 
 // src/services/authService.js
 var currentTenantId = null;
+var currentRegisterTransactionId = null;
 var extractToken = (res) => {
   const headers = (res == null ? void 0 : res.headers) || {};
   const data = (res == null ? void 0 : res.data) || {};
@@ -179,6 +183,12 @@ var getTenantId = () => {
   }
   if (typeof process !== "undefined" && ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.RDEP_TENANT_ID)) {
     return String(process.env.RDEP_TENANT_ID);
+  }
+  return null;
+};
+var getRegisterTransactionId = () => {
+  if (currentRegisterTransactionId) {
+    return currentRegisterTransactionId;
   }
   return null;
 };
@@ -223,6 +233,7 @@ var register = async ({
   password,
   domainName
 }) => {
+  var _a, _b, _c;
   const res = await apiClient_default.post("/auth-service/cws/register", {
     firstName,
     middleName,
@@ -236,11 +247,62 @@ var register = async ({
   if (token) {
     setToken(token);
   }
+  const transactionId = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.transactionId) || ((_c = (_b = res == null ? void 0 : res.data) == null ? void 0 : _b.registerResponse) == null ? void 0 : _c.transactionId) || (res == null ? void 0 : res.transactionId);
+  if (transactionId) {
+    currentRegisterTransactionId = String(transactionId);
+  }
   const user = (res == null ? void 0 : res.data) || {};
   if (user) {
     setUserDetails(user);
   }
   return user;
+};
+var validateRegisterOtp = async ({
+  email,
+  mobileNumber,
+  domainName,
+  transactionId,
+  otp
+}) => {
+  const resolvedTransactionId = transactionId || currentRegisterTransactionId || null;
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call register first or pass transactionId explicitly."
+    );
+  }
+  const res = await apiClient_default.post("/auth-service/cws/register/validateOTP", {
+    email,
+    mobileNumber,
+    domainName,
+    transactionId: resolvedTransactionId,
+    otp
+  });
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  const user = (res == null ? void 0 : res.data) || res || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+};
+var resendRegisterOtp = async ({
+  email,
+  mobileNumber,
+  domainName
+}) => {
+  var _a, _b, _c;
+  const res = await apiClient_default.post("/auth-service/cws/register/resendOTP", {
+    email,
+    mobileNumber,
+    domainName
+  });
+  const transactionId = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.transactionId) || ((_c = (_b = res == null ? void 0 : res.data) == null ? void 0 : _b.registerResponse) == null ? void 0 : _c.transactionId) || (res == null ? void 0 : res.transactionId);
+  if (transactionId) {
+    currentRegisterTransactionId = String(transactionId);
+  }
+  return (res == null ? void 0 : res.data) || res;
 };
 var sendRegisterVerifyMobileOtp = async ({
   email,
@@ -475,6 +537,7 @@ var logout = async () => {
     clearToken();
     clearUserDetails();
     currentTenantId = null;
+    currentRegisterTransactionId = null;
   }
 };
 
@@ -1123,6 +1186,7 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   getOrderList,
   getProductDetailById,
   getProductsByTenantAndStore,
+  getRegisterTransactionId,
   getTenantId,
   getTenantIdByDomain,
   getToken,
@@ -1135,6 +1199,7 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   register,
   registerEcom,
   removeItemFromCart,
+  resendRegisterOtp,
   saveRegisterAadhaarAddress,
   saveRegisterDetails,
   sendRegisterVerifyAadhaarOtp,
@@ -1145,6 +1210,7 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
   setUserDetails,
   updateItemQty,
   validateRegisterBankAccount,
+  validateRegisterOtp,
   validateRegisterPan,
   validateRegisterReference,
   validateRegisterVerifyAadhaarOtp,
