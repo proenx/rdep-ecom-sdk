@@ -210,11 +210,15 @@ const run = async () => {
 
   await safeCall("validateRegisterOtp", () =>
     validateRegisterOtp({
+      firstName: "Shivani",
+      middleName: "",
+      lastName: "B",
       email: "shivani.b@proenx.com",
       mobileNumber: "9834050349",
+      password: "Shivani@123",
       domainName: "ecom-retail.qa.rdep.io",
-      transactionId: "4b8c2808-c284-4ca6-badc-33712adb03d6",
-      otp: "5031",
+      transactionId: "d01dfad3-30c5-4bdc-aa75-7332c3cafd9f",
+      otp: "2068",
     }),
   );
 
