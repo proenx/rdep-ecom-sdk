@@ -15,6 +15,8 @@ import {
   saveRegisterAadhaarAddress,
   validateRegisterPan,
   validateRegisterBankAccount,
+  validateRegisterOtp,
+  getRegisterTransactionId,
   setTenantId,
   getTenantId,
   getTenantIdByDomain,
@@ -69,112 +71,112 @@ const run = async () => {
   console.log("getUserDetails", getUserDetails());
   console.log("getToken", getToken());
 
-  await safeCall("sendRegisterVerifyMobileOtp", () =>
-    sendRegisterVerifyMobileOtp({
-      email: "pallab.s@proenx.com",
-      mobileNumber,
-      domainName: tenantDomain,
-    }),
-  );
+  // await safeCall("sendRegisterVerifyMobileOtp", () =>
+  //   sendRegisterVerifyMobileOtp({
+  //     email: "pallab.s@proenx.com",
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //   }),
+  // );
 
-  await safeCall("sendRegisterVerifyEmailOtp", () =>
-    sendRegisterVerifyEmailOtp({
-      email: "pallab.s@proenx.com",
-      domainName: tenantDomain,
-    }),
-  );
+  // await safeCall("sendRegisterVerifyEmailOtp", () =>
+  //   sendRegisterVerifyEmailOtp({
+  //     email: "pallab.s@proenx.com",
+  //     domainName: tenantDomain,
+  //   }),
+  // );
 
-  await safeCall("validateRegisterVerifyEmailOtp", () =>
-    validateRegisterVerifyEmailOtp({
-      email: "pallab.s@proenx.com",
-      domainName: tenantDomain,
-      emailValidationId: "db05c79d-c543-4c64-a3f1-5d1ab7c9fbb6",
-      emailOtp: "8600",
-    }),
-  );
+  // await safeCall("validateRegisterVerifyEmailOtp", () =>
+  //   validateRegisterVerifyEmailOtp({
+  //     email: "pallab.s@proenx.com",
+  //     domainName: tenantDomain,
+  //     emailValidationId: "db05c79d-c543-4c64-a3f1-5d1ab7c9fbb6",
+  //     emailOtp: "8600",
+  //   }),
+  // );
 
-  await safeCall("validateRegisterVerifyMobileOtp", () =>
-    validateRegisterVerifyMobileOtp({
-      email: "pallab.s@proenx.com",
-      mobileNumber,
-      domainName: tenantDomain,
-      mobileValidationId: "edeb3952-a1a0-4dc0-842b-c069be5da0e8",
-      mobileOtp: "1046",
-    }),
-  );
+  // await safeCall("validateRegisterVerifyMobileOtp", () =>
+  //   validateRegisterVerifyMobileOtp({
+  //     email: "pallab.s@proenx.com",
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     mobileValidationId: "edeb3952-a1a0-4dc0-842b-c069be5da0e8",
+  //     mobileOtp: "1046",
+  //   }),
+  // );
 
-  await safeCall("validateRegisterReference", () =>
-    validateRegisterReference({
-      email: "pallab.s@proenx.com",
-      domainName: tenantDomain,
-      referenceCode: "BA001757",
-    }),
-  );
+  // await safeCall("validateRegisterReference", () =>
+  //   validateRegisterReference({
+  //     email: "pallab.s@proenx.com",
+  //     domainName: tenantDomain,
+  //     referenceCode: "BA001757",
+  //   }),
+  // );
 
-  await safeCall("saveRegisterDetails", () =>
-    saveRegisterDetails({
-      mobileNumber,
-      domainName: tenantDomain,
-      name: "Pallab",
-      dateOfBirth: "01/01/1990",
-      email: "pallab.s@proenx.com",
-      password: "123456",
-    }),
-  );
+  // await safeCall("saveRegisterDetails", () =>
+  //   saveRegisterDetails({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     name: "Pallab",
+  //     dateOfBirth: "01/01/1990",
+  //     email: "pallab.s@proenx.com",
+  //     password: "123456",
+  //   }),
+  // );
 
-  await safeCall("sendRegisterVerifyAadhaarOtp", () =>
-    sendRegisterVerifyAadhaarOtp({
-      mobileNumber,
-      domainName: tenantDomain,
-      aadhaarNumber: "123456789012",
-    }),
-  );
+  // await safeCall("sendRegisterVerifyAadhaarOtp", () =>
+  //   sendRegisterVerifyAadhaarOtp({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     aadhaarNumber: "123456789012",
+  //   }),
+  // );
 
-  await safeCall("validateRegisterVerifyAadhaarOtp", () =>
-    validateRegisterVerifyAadhaarOtp({
-      mobileNumber,
-      domainName: tenantDomain,
-      aadhaarNumber: "123456789012",
-      aadhaarValidationId: "1234567",
-      aadhaarOtp: "121212",
-    }),
-  );
+  // await safeCall("validateRegisterVerifyAadhaarOtp", () =>
+  //   validateRegisterVerifyAadhaarOtp({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     aadhaarNumber: "123456789012",
+  //     aadhaarValidationId: "1234567",
+  //     aadhaarOtp: "121212",
+  //   }),
+  // );
 
-  await safeCall("saveRegisterAadhaarAddress", () =>
-    saveRegisterAadhaarAddress({
-      mobileNumber,
-      domainName: tenantDomain,
-      saveAadhaarAddress: true,
-      aadhaarAddress: {
-        addressLine1: "address line 1",
-        addressLine2: "address line 2",
-        addressLine3: "address line 3",
-        city: "Bengaluru",
-        state: "Karnataka",
-        country: "India",
-        pinCode: "560001",
-      },
-    }),
-  );
+  // await safeCall("saveRegisterAadhaarAddress", () =>
+  //   saveRegisterAadhaarAddress({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     saveAadhaarAddress: true,
+  //     aadhaarAddress: {
+  //       addressLine1: "address line 1",
+  //       addressLine2: "address line 2",
+  //       addressLine3: "address line 3",
+  //       city: "Bengaluru",
+  //       state: "Karnataka",
+  //       country: "India",
+  //       pinCode: "560001",
+  //     },
+  //   }),
+  // );
 
-  await safeCall("validateRegisterPan", () =>
-    validateRegisterPan({
-      mobileNumber,
-      domainName: tenantDomain,
-      aadhaarNumber: "123456789012",
-      panNumber: "XXXPX1234A",
-    }),
-  );
+  // await safeCall("validateRegisterPan", () =>
+  //   validateRegisterPan({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     aadhaarNumber: "123456789012",
+  //     panNumber: "XXXPX1234A",
+  //   }),
+  // );
 
-  await safeCall("validateRegisterBankAccount", () =>
-    validateRegisterBankAccount({
-      mobileNumber,
-      domainName: tenantDomain,
-      bankAccountHolderName: "Jhon Deo",
-      bankAccountNumber: "1234567890",
-      bankIfsc: "ABCD00012345",
-    }),
-  );
+  // await safeCall("validateRegisterBankAccount", () =>
+  //   validateRegisterBankAccount({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     bankAccountHolderName: "Jhon Deo",
+  //     bankAccountNumber: "1234567890",
+  //     bankIfsc: "ABCD00012345",
+  //   }),
+  // );
 
   await safeCall("registerEcom", () =>
     registerEcom({
@@ -183,7 +185,7 @@ const run = async () => {
     }),
   );
 
-  await safeCall("register", () =>
+  const registerResponse = await safeCall("register", () =>
     register({
       firstName: "Pallab",
       middleName: "",
@@ -192,6 +194,26 @@ const run = async () => {
       email: "pallab.s@proenx.com",
       password: "123456",
       domainName: tenantDomain,
+    }),
+  );
+
+  console.log(
+    "register transactionId from response",
+    registerResponse?.transactionId ||
+      registerResponse?.registerResponse?.transactionId,
+  );
+  console.log(
+    "register transactionId from sdk memory",
+    getRegisterTransactionId(),
+  );
+
+  await safeCall("validateRegisterOtp", () =>
+    validateRegisterOtp({
+      email: "shivani.b@proenx.com",
+      mobileNumber: "9834050349",
+      domainName: "ecom-retail.qa.rdep.io",
+      transactionId: "4b8c2808-c284-4ca6-badc-33712adb03d6",
+      otp: "5031",
     }),
   );
 
