@@ -1030,7 +1030,7 @@ const placeOrder = async (orderRequest = {}) => {
     }
 
     const res = await apiClient.post(
-      "/order-service/ws/order/place",
+      "/order-service/ws/ecom/order/place",
       orderRequest,
     );
 
@@ -1140,7 +1140,7 @@ const checkTransactionStatus = async (orderId) => {
 
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient.get(
-      `/order-service/ws/order/checkTransactionStatus/${encodedOrderId}`,
+      `/order-service/ws/ecom/order/checkTransactionStatus/${encodedOrderId}`,
     );
 
     // apiClient returns only res.data for non-auth APIs.
@@ -1179,7 +1179,7 @@ const generatePaymentLink = async (orderId) => {
 
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient.get(
-      `/order-service/ws/order/generatePaymentLink/${encodedOrderId}`,
+      `/order-service/ws/ecom/order/generatePaymentLink/${encodedOrderId}`,
     );
 
     // apiClient returns only res.data for non-auth APIs.

@@ -861,7 +861,7 @@ var placeOrder = async (orderRequest = {}) => {
       throw new Error("placeOrder requires a valid order request object");
     }
     const res = await apiClient_default.post(
-      "/order-service/ws/order/place",
+      "/order-service/ws/ecom/order/place",
       orderRequest
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
@@ -939,7 +939,7 @@ var checkTransactionStatus = async (orderId) => {
     }
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient_default.get(
-      `/order-service/ws/order/checkTransactionStatus/${encodedOrderId}`
+      `/order-service/ws/ecom/order/checkTransactionStatus/${encodedOrderId}`
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = extractTokenFromResponse2(res);
@@ -968,7 +968,7 @@ var generatePaymentLink = async (orderId) => {
     }
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient_default.get(
-      `/order-service/ws/order/generatePaymentLink/${encodedOrderId}`
+      `/order-service/ws/ecom/order/generatePaymentLink/${encodedOrderId}`
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     console.log(
