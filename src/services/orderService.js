@@ -146,10 +146,10 @@ export const checkTransactionStatus = async (orderId) => {
     }
 
     const transactionStatusResponse = responseData || {};
-    console.log(
-      "Check Transaction Status API Response:",
-      JSON.stringify(transactionStatusResponse, null, 2),
-    );
+    // console.log(
+    //   "Check Transaction Status API Response:",
+    //   JSON.stringify(transactionStatusResponse, null, 2),
+    // );
 
     return responseData;
   } catch (error) {

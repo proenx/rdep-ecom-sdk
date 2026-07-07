@@ -537,10 +537,10 @@ const registerEcom = async ({ mobileNumber, domainName }) => {
   }
   const user = res?.data?.loginResponse || {};
   if (user) {
-    setUserDetails(user);
+    setUserDetails(res?.data?.loginResponse);
   }
 
-  return user;
+  return res?.data || res;
 };
 
 /**
@@ -1152,10 +1152,10 @@ const checkTransactionStatus = async (orderId) => {
     }
 
     const transactionStatusResponse = responseData || {};
-    console.log(
-      "Check Transaction Status API Response:",
-      JSON.stringify(transactionStatusResponse, null, 2),
-    );
+    // console.log(
+    //   "Check Transaction Status API Response:",
+    //   JSON.stringify(transactionStatusResponse, null, 2),
+    // );
 
     return responseData;
   } catch (error) {
