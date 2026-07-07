@@ -491,7 +491,7 @@ var validateRegisterBankAccount = async ({
   return res;
 };
 var registerEcom = async ({ mobileNumber, domainName }) => {
-  var _a;
+  var _a, _b;
   const res = await apiClient_default.post("/auth-service/ecom/register", {
     mobileNumber,
     domainName
@@ -502,9 +502,9 @@ var registerEcom = async ({ mobileNumber, domainName }) => {
   }
   const user = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.loginResponse) || {};
   if (user) {
-    setUserDetails(user);
+    setUserDetails((_b = res == null ? void 0 : res.data) == null ? void 0 : _b.loginResponse);
   }
-  return user;
+  return (res == null ? void 0 : res.data) || res;
 };
 var checkTenant = async (tenantDomain) => {
   var _a;
@@ -947,10 +947,6 @@ var checkTransactionStatus = async (orderId) => {
       setToken(token);
     }
     const transactionStatusResponse = responseData || {};
-    console.log(
-      "Check Transaction Status API Response:",
-      JSON.stringify(transactionStatusResponse, null, 2)
-    );
     return responseData;
   } catch (error) {
     console.error(

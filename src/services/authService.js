@@ -451,10 +451,10 @@ export const registerEcom = async ({ mobileNumber, domainName }) => {
   }
   const user = res?.data?.loginResponse || {};
   if (user) {
-    setUserDetails(user);
+    setUserDetails(res?.data?.loginResponse);
   }
 
-  return user;
+  return res?.data || res;
 };
 
 /**
