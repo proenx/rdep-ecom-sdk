@@ -408,7 +408,7 @@ var validateRegisterBankAccount = async ({
   return res;
 };
 var registerEcom = async ({ mobileNumber, domainName }) => {
-  var _a;
+  var _a, _b;
   const res = await apiClient_default.post("/auth-service/ecom/register", {
     mobileNumber,
     domainName
@@ -419,9 +419,9 @@ var registerEcom = async ({ mobileNumber, domainName }) => {
   }
   const user = ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.loginResponse) || {};
   if (user) {
-    setUserDetails(user);
+    setUserDetails((_b = res == null ? void 0 : res.data) == null ? void 0 : _b.loginResponse);
   }
-  return user;
+  return (res == null ? void 0 : res.data) || res;
 };
 var checkTenant = async (tenantDomain) => {
   var _a;
@@ -778,7 +778,7 @@ var placeOrder = async (orderRequest = {}) => {
       throw new Error("placeOrder requires a valid order request object");
     }
     const res = await apiClient_default.post(
-      "/order-service/ws/order/place",
+      "/order-service/ws/ecom/order/place",
       orderRequest
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
@@ -856,7 +856,7 @@ var checkTransactionStatus = async (orderId) => {
     }
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient_default.get(
-      `/order-service/ws/order/checkTransactionStatus/${encodedOrderId}`
+      `/order-service/ws/ecom/order/checkTransactionStatus/${encodedOrderId}`
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = extractTokenFromResponse2(res);
@@ -864,10 +864,6 @@ var checkTransactionStatus = async (orderId) => {
       setToken(token);
     }
     const transactionStatusResponse = responseData || {};
-    console.log(
-      "Check Transaction Status API Response:",
-      JSON.stringify(transactionStatusResponse, null, 2)
-    );
     return responseData;
   } catch (error) {
     console.error(
@@ -885,7 +881,7 @@ var generatePaymentLink = async (orderId) => {
     }
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient_default.get(
-      `/order-service/ws/order/generatePaymentLink/${encodedOrderId}`
+      `/order-service/ws/ecom/order/generatePaymentLink/${encodedOrderId}`
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     console.log(

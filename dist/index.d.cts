@@ -537,10 +537,10 @@ const registerEcom = async ({ mobileNumber, domainName }) => {
   }
   const user = res?.data?.loginResponse || {};
   if (user) {
-    setUserDetails(user);
+    setUserDetails(res?.data?.loginResponse);
   }
 
-  return user;
+  return res?.data || res;
 };
 
 /**
@@ -1030,7 +1030,7 @@ const placeOrder = async (orderRequest = {}) => {
     }
 
     const res = await apiClient.post(
-      "/order-service/ws/order/place",
+      "/order-service/ws/ecom/order/place",
       orderRequest,
     );
 
@@ -1140,7 +1140,7 @@ const checkTransactionStatus = async (orderId) => {
 
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient.get(
-      `/order-service/ws/order/checkTransactionStatus/${encodedOrderId}`,
+      `/order-service/ws/ecom/order/checkTransactionStatus/${encodedOrderId}`,
     );
 
     // apiClient returns only res.data for non-auth APIs.
@@ -1152,10 +1152,10 @@ const checkTransactionStatus = async (orderId) => {
     }
 
     const transactionStatusResponse = responseData || {};
-    console.log(
-      "Check Transaction Status API Response:",
-      JSON.stringify(transactionStatusResponse, null, 2),
-    );
+    // console.log(
+    //   "Check Transaction Status API Response:",
+    //   JSON.stringify(transactionStatusResponse, null, 2),
+    // );
 
     return responseData;
   } catch (error) {
@@ -1179,7 +1179,7 @@ const generatePaymentLink = async (orderId) => {
 
     const encodedOrderId = encodeURIComponent(String(orderId));
     const res = await apiClient.get(
-      `/order-service/ws/order/generatePaymentLink/${encodedOrderId}`,
+      `/order-service/ws/ecom/order/generatePaymentLink/${encodedOrderId}`,
     );
 
     // apiClient returns only res.data for non-auth APIs.
