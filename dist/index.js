@@ -407,11 +407,25 @@ var validateRegisterBankAccount = async ({
   );
   return res;
 };
-var registerEcom = async ({ mobileNumber, domainName }) => {
+var getActiveRegisterConsentRequirements = async ({
+  mobileNumber,
+  domainName
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/consents/active-requirements",
+    {
+      mobileNumber,
+      domainName
+    }
+  );
+  return res;
+};
+var registerEcom = async ({ mobileNumber, domainName, consent }) => {
   var _a, _b;
   const res = await apiClient_default.post("/auth-service/ecom/register", {
     mobileNumber,
-    domainName
+    domainName,
+    consent
   });
   const token = extractToken(res);
   if (token) {
@@ -1098,6 +1112,7 @@ export {
   ecomLogin,
   editCustomerAddress,
   generatePaymentLink,
+  getActiveRegisterConsentRequirements,
   getCategoriesByTenant,
   getCustomer,
   getCustomerAddress,
