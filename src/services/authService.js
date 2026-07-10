@@ -438,12 +438,30 @@ export const validateRegisterBankAccount = async ({
 };
 
 /**
+ * Fetch active consent requirements during registration
+ */
+export const getActiveRegisterConsentRequirements = async ({
+  mobileNumber,
+  domainName,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/consents/active-requirements",
+    {
+      mobileNumber,
+      domainName,
+    },
+  );
+  return res;
+};
+
+/**
  * Register distributor/customer for ecom flow
  */
-export const registerEcom = async ({ mobileNumber, domainName }) => {
+export const registerEcom = async ({ mobileNumber, domainName, consent }) => {
   const res = await apiClient.post("/auth-service/ecom/register", {
     mobileNumber,
     domainName,
+    consent,
   });
   const token = extractToken(res);
   if (token) {

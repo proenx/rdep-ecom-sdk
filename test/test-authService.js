@@ -15,6 +15,7 @@ import {
   saveRegisterAadhaarAddress,
   validateRegisterPan,
   validateRegisterBankAccount,
+  getActiveRegisterConsentRequirements,
   validateRegisterOtp,
   resendRegisterOtp,
   getRegisterTransactionId,
@@ -179,10 +180,72 @@ const run = async () => {
   //   }),
   // );
 
+  await safeCall("getActiveRegisterConsentRequirements", () =>
+    getActiveRegisterConsentRequirements({
+      mobileNumber,
+      domainName: tenantDomain,
+    }),
+  );
+
   await safeCall("registerEcom", () =>
     registerEcom({
       mobileNumber,
       domainName: tenantDomain,
+      consent: {
+        handshakeToken: "{{handshake-token}}",
+        appVersion: "1",
+        acceptances: [
+          {
+            consentMasterId: 3,
+            echoedHash:
+              "e3ee5588a961e166043a7f3ce71f5fd204f67098d22de2708ec95b1ebdcccdbf",
+            acceptedValue: "CHECKED",
+          },
+          {
+            consentMasterId: 4,
+            echoedHash:
+              "183f15a3003bc8c9cd5bf243cfac96310d107a3468363fc4b24ea64b73c68781",
+            acceptedValue: "CHECKED",
+          },
+          {
+            consentMasterId: 5,
+            echoedHash:
+              "94b9a639409ee13e28cc441eda4b46cae3702a0eda0b2c0f043fae032720c7ae",
+            acceptedValue: "CHECKED",
+          },
+          {
+            consentMasterId: 6,
+            echoedHash:
+              "847c4c2446021996cb8e5002ad4649fca92bbf19f3e3fe4563732aa4ba0b55ce",
+            acceptedValue: "CHECKED",
+          },
+          {
+            consentMasterId: 7,
+            echoedHash:
+              "5a43b21f166382bf86ff17fe3f238e3e3a90d899d39234965dcafa6e861798fe",
+            acceptedValue: "CHECKED",
+          },
+          {
+            consentMasterId: 8,
+            echoedHash:
+              "073dc3eb7ecbbae7ccbffc41875e6dbf891305fb3a01d0514f48c271a66c1c96",
+            acceptedValue: "ACCEPTED",
+          },
+          {
+            consentMasterId: 9,
+            echoedHash:
+              "2c76ed8608ff09805d53426791731a1c9e6270e5f29eed8ad455416943c38f08",
+            acceptedValue:
+              "I AGREE TO BE BOUND BY THE INDIEKONNECT DISTRIBUTOR AGREEMENT OF MY OWN FREE WILL.",
+          },
+          {
+            consentMasterId: 10,
+            echoedHash:
+              "652320c5eeac9cd941961a3cc1cabe0088ec98936dd3a2ba3a46769c25c5b8a3",
+            acceptedValue: "John Ronald Doe | XXXPX1234A",
+          },
+        ],
+      },
     }),
   );
 
