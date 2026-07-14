@@ -185,6 +185,8 @@ const customerLogin = async ({ username, password, domainName }) => {
   return user;
 };
 
+const login = ecomLogin;
+
 /**
  * Register
  */
@@ -1445,9 +1447,77 @@ const getProductsByTenantAndStore = async ({
 };
 
 /**
+ * Search products (V2) by tenant and store
+ * POST /product-service/ecom/{tenantId}/products/{storeId}
+ * Supports optional `authToken` for Authorization header.
+ */
+const searchProductsV2 = async ({
+  tenantId,
+  storeId,
+  search = "",
+  pageNo = 0,
+  limit = 20,
+  sortBy = "createdDate",
+  sortOrder = "DESC",
+  authToken,
+} = {}) => {
+  try {
+    const resolvedTenantId = await resolveTenantId(tenantId);
+    const resolvedStoreId =
+      storeId !== undefined && storeId !== null && storeId !== ""
+        ? String(storeId)
+        : null;
+
+    if (!resolvedStoreId) {
+      throw new Error("searchProductsV2 requires a storeId");
+    }
+
+    const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
+    const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
+    const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
+    console.log("Search Products V2 API Endpoint:", endpoint);
+
+    const payload = {
+      search,
+      pageNo,
+      limit,
+      sortBy,
+      sortOrder,
+    };
+
+    const config = {};
+    if (authToken) {
+      config.headers = {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      };
+    }
+
+    const res = Object.keys(config).length
+      ? await apiClient.post(endpoint, payload, config)
+      : await apiClient.post(endpoint, payload);
+
+    const responseData = res?.data ? res.data : res;
+
+    const token = res?.headers?.authorization || res?.headers?.Authorization;
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Search Products V2 API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
  * Fetch product overview by tenant and product
  */
-const getProductDetailById = async ({ tenantId, productId } = {}) => {
+const getProductDetailById = async ({ tenantId, productId, variant = false, authToken } = {}) => {
   try {
     const resolvedTenantId = await resolveTenantId(tenantId);
     const resolvedProductId =
@@ -1461,10 +1531,21 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
 
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedProductId = encodeURIComponent(String(resolvedProductId));
-    const endpoint = `/product-service/ecom/${encodedTenantId}/product-overview/${encodedProductId}`;
+    let endpoint = `/product-service/ecom/${encodedTenantId}/product-overview/${encodedProductId}`;
+    if (variant) {
+      endpoint += "?variant=true";
+    }
     console.log("Product Overview API Endpoint:", endpoint);
 
-    const res = await apiClient.get(endpoint);
+    const config = {};
+    if (authToken) {
+      config.headers = {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      };
+    }
+
+    const res = Object.keys(config).length ? await apiClient.get(endpoint, config) : await apiClient.get(endpoint);
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;
@@ -1484,4 +1565,4 @@ const getProductDetailById = async ({ tenantId, productId } = {}) => {
   }
 };
 
-export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };
+export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };

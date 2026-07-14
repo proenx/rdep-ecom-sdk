@@ -99,6 +99,8 @@ export const customerLogin = async ({ username, password, domainName }) => {
   return user;
 };
 
+export const login = ecomLogin;
+
 /**
  * Register
  */
