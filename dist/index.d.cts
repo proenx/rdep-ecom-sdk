@@ -90,6 +90,7 @@ const clearUserDetails = () => {
 
 let currentTenantId = null;
 let currentRegisterTransactionId = null;
+let currentSetNewPasswordTransactionId = null;
 
 const extractToken = (res) => {
   const headers = res?.headers || {};
@@ -140,6 +141,14 @@ const getTenantId = () => {
 const getRegisterTransactionId = () => {
   if (currentRegisterTransactionId) {
     return currentRegisterTransactionId;
+  }
+
+  return null;
+};
+
+const getSetNewPasswordTransactionId = () => {
+  if (currentSetNewPasswordTransactionId) {
+    return currentSetNewPasswordTransactionId;
   }
 
   return null;
@@ -299,6 +308,68 @@ const resendRegisterOtp = async ({
   if (transactionId) {
     currentRegisterTransactionId = String(transactionId);
   }
+
+  return res?.data || res;
+};
+
+/**
+ * Generate OTP for set new password flow
+ */
+const generateSetNewPasswordOtp = async ({
+  username,
+  tenantSubDomain,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/noauth/password/setNewPassword/generateOtp",
+    {
+      username,
+      tenantSubDomain,
+    },
+  );
+
+  const transactionId =
+    res?.transactionId ||
+    res?.data?.transactionId ||
+    res?.response?.transactionId;
+
+  if (transactionId) {
+    currentSetNewPasswordTransactionId = String(transactionId);
+  }
+
+  return res?.data || res;
+};
+
+/**
+ * Set new password after OTP validation
+ */
+const setNewPassword = async ({
+  username,
+  transactionId,
+  otp,
+  newPassword,
+  confirmPassword,
+  tenantSubDomain,
+}) => {
+  const resolvedTransactionId =
+    transactionId || currentSetNewPasswordTransactionId || null;
+
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call generateSetNewPasswordOtp first or pass transactionId explicitly.",
+    );
+  }
+
+  const res = await apiClient.post(
+    "/auth-service/noauth/password/setNewPassword",
+    {
+      username,
+      transactionId: resolvedTransactionId,
+      otp,
+      newPassword,
+      confirmPassword,
+      tenantSubDomain,
+    },
+  );
 
   return res?.data || res;
 };
@@ -620,6 +691,7 @@ const logout = async () => {
     clearUserDetails();
     currentTenantId = null;
     currentRegisterTransactionId = null;
+    currentSetNewPasswordTransactionId = null;
   }
 };
 
@@ -1565,4 +1637,4 @@ const getProductDetailById = async ({ tenantId, productId, variant = false, auth
   }
 };
 
-export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };
+export { addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };
