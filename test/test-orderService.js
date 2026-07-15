@@ -5,6 +5,7 @@ import {
   checkTransactionStatus,
   generatePaymentLink,
   initiateRazorPayPayment,
+  verifyRazorpayStatus,
   getOrderList,
   getOrderById,
   setToken,
@@ -165,6 +166,18 @@ const run = async () => {
     console.log(
       "INITIATE RAZORPAY PAYMENT RESPONSE:",
       JSON.stringify(razorPayResponse, null, 2),
+    );
+
+    const verifyRazorpayStatusResponse = await verifyRazorpayStatus({
+      orderId: placeOrderResponse.orderId || paymentRequest.orderId,
+      razorpayPaymentId: "pay_TDiW5Qet8IvOHN",
+      razorpayOrderId: "order_TDiVJqobWni9ns",
+      razorpaySignature:
+        "50952343c02feb6e94a7981f34d0c44f18ed87c2901c53a7cfbcc1fde01f5dea",
+    });
+    console.log(
+      "VERIFY RAZORPAY STATUS RESPONSE:",
+      JSON.stringify(verifyRazorpayStatusResponse, null, 2),
     );
   } catch (e) {
     console.error("ORDER TEST FAILED");

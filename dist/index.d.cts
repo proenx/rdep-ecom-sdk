@@ -1377,6 +1377,61 @@ const initiateRazorPayPayment = async (orderId) => {
 };
 
 /**
+ * Verify Razorpay payment status
+ */
+const verifyRazorpayStatus = async ({
+  orderId,
+  razorpayPaymentId,
+  razorpayOrderId,
+  razorpaySignature,
+} = {}) => {
+  try {
+    if (!orderId) {
+      throw new Error("verifyRazorpayStatus requires an orderId");
+    }
+
+    if (!razorpayPaymentId || String(razorpayPaymentId).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpayPaymentId");
+    }
+
+    if (!razorpayOrderId || String(razorpayOrderId).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpayOrderId");
+    }
+
+    if (!razorpaySignature || String(razorpaySignature).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpaySignature");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.post(
+      `/order-service/ws/ecom/order/verifyRazorpayStatus/${encodedOrderId}`,
+      {
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature,
+      },
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify Razorpay Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
  * Fetch order list
  */
 const getOrderList = async () => {
@@ -1713,4 +1768,4 @@ const getProductDetailById = async ({ tenantId, productId, variant = false, auth
   }
 };
 
-export { addBankDetails, addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateRazorPayPayment, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp };
+export { addBankDetails, addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateRazorPayPayment, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyRazorpayStatus };

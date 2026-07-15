@@ -85,7 +85,8 @@ __export(index_exports, {
   validateRegisterReference: () => validateRegisterReference,
   validateRegisterVerifyAadhaarOtp: () => validateRegisterVerifyAadhaarOtp,
   validateRegisterVerifyEmailOtp: () => validateRegisterVerifyEmailOtp,
-  validateRegisterVerifyMobileOtp: () => validateRegisterVerifyMobileOtp
+  validateRegisterVerifyMobileOtp: () => validateRegisterVerifyMobileOtp,
+  verifyRazorpayStatus: () => verifyRazorpayStatus
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -1117,6 +1118,49 @@ var initiateRazorPayPayment = async (orderId) => {
     throw error;
   }
 };
+var verifyRazorpayStatus = async ({
+  orderId,
+  razorpayPaymentId,
+  razorpayOrderId,
+  razorpaySignature
+} = {}) => {
+  var _a;
+  try {
+    if (!orderId) {
+      throw new Error("verifyRazorpayStatus requires an orderId");
+    }
+    if (!razorpayPaymentId || String(razorpayPaymentId).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpayPaymentId");
+    }
+    if (!razorpayOrderId || String(razorpayOrderId).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpayOrderId");
+    }
+    if (!razorpaySignature || String(razorpaySignature).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpaySignature");
+    }
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient_default.post(
+      `/order-service/ws/ecom/order/verifyRazorpayStatus/${encodedOrderId}`,
+      {
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature
+      }
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify Razorpay Status API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var getOrderList = async () => {
   var _a;
   try {
@@ -1418,5 +1462,6 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
   validateRegisterReference,
   validateRegisterVerifyAadhaarOtp,
   validateRegisterVerifyEmailOtp,
-  validateRegisterVerifyMobileOtp
+  validateRegisterVerifyMobileOtp,
+  verifyRazorpayStatus
 });
