@@ -203,6 +203,39 @@ export const generatePaymentLink = async (orderId) => {
 };
 
 /**
+ * Initiate Razorpay payment
+ */
+export const initiateRazorPayPayment = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("initiateRazorPayPayment requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/initiateRazorPayPayment/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Razorpay Payment API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
  * Fetch order list
  */
 export const getOrderList = async () => {

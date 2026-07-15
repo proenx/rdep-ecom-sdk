@@ -1002,6 +1002,30 @@ var generatePaymentLink = async (orderId) => {
     throw error;
   }
 };
+var initiateRazorPayPayment = async (orderId) => {
+  var _a;
+  try {
+    if (!orderId) {
+      throw new Error("initiateRazorPayPayment requires an orderId");
+    }
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient_default.get(
+      `/order-service/ws/ecom/order/initiateRazorPayPayment/${encodedOrderId}`
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Razorpay Payment API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var getOrderList = async () => {
   var _a;
   try {
@@ -1275,6 +1299,7 @@ export {
   getToken,
   getUserDetails,
   initClient,
+  initiateRazorPayPayment,
   login,
   logout,
   placeOrder,
