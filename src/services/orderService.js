@@ -236,6 +236,61 @@ export const initiateRazorPayPayment = async (orderId) => {
 };
 
 /**
+ * Verify Razorpay payment status
+ */
+export const verifyRazorpayStatus = async ({
+  orderId,
+  razorpayPaymentId,
+  razorpayOrderId,
+  razorpaySignature,
+} = {}) => {
+  try {
+    if (!orderId) {
+      throw new Error("verifyRazorpayStatus requires an orderId");
+    }
+
+    if (!razorpayPaymentId || String(razorpayPaymentId).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpayPaymentId");
+    }
+
+    if (!razorpayOrderId || String(razorpayOrderId).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpayOrderId");
+    }
+
+    if (!razorpaySignature || String(razorpaySignature).trim() === "") {
+      throw new Error("verifyRazorpayStatus requires razorpaySignature");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.post(
+      `/order-service/ws/ecom/order/verifyRazorpayStatus/${encodedOrderId}`,
+      {
+        razorpayPaymentId,
+        razorpayOrderId,
+        razorpaySignature,
+      },
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify Razorpay Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
  * Fetch order list
  */
 export const getOrderList = async () => {
