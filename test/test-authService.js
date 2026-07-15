@@ -19,6 +19,9 @@ import {
   validateRegisterOtp,
   resendRegisterOtp,
   getRegisterTransactionId,
+  generateSetNewPasswordOtp,
+  setNewPassword,
+  getSetNewPasswordTransactionId,
   setTenantId,
   getTenantId,
   getTenantIdByDomain,
@@ -292,6 +295,41 @@ const run = async () => {
       domainName: "ecom-retail.qa.rdep.io",
     }),
   );
+
+  const setPasswordUsername = process.env.RDEP_RESET_USERNAME || "TENANT";
+  const setPasswordTenantSubDomain =
+    process.env.RDEP_RESET_TENANT_SUBDOMAIN || "px";
+
+  await safeCall("generateSetNewPasswordOtp", () =>
+    generateSetNewPasswordOtp({
+      username: setPasswordUsername,
+      tenantSubDomain: setPasswordTenantSubDomain,
+    }),
+  );
+
+  console.log(
+    "setNewPassword transactionId from sdk memory",
+    getSetNewPasswordTransactionId(),
+  );
+
+  // Update OTP/password via env vars before running:
+  // RDEP_RESET_OTP, RDEP_RESET_NEW_PASSWORD, RDEP_RESET_CONFIRM_PASSWORD
+  if (
+    process.env.RDEP_RESET_OTP &&
+    process.env.RDEP_RESET_NEW_PASSWORD &&
+    process.env.RDEP_RESET_CONFIRM_PASSWORD
+  ) {
+    await safeCall("setNewPassword", () =>
+      setNewPassword({
+        username: setPasswordUsername,
+        transactionId: process.env.RDEP_RESET_TRANSACTION_ID,
+        otp: process.env.RDEP_RESET_OTP,
+        newPassword: process.env.RDEP_RESET_NEW_PASSWORD,
+        confirmPassword: process.env.RDEP_RESET_CONFIRM_PASSWORD,
+        tenantSubDomain: setPasswordTenantSubDomain,
+      }),
+    );
+  }
 
   await safeCall("logout", () => logout());
   console.log("getToken after logout", getToken());

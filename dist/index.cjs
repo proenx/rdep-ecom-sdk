@@ -40,6 +40,7 @@ __export(index_exports, {
   ecomLogin: () => ecomLogin,
   editCustomerAddress: () => editCustomerAddress,
   generatePaymentLink: () => generatePaymentLink,
+  generateSetNewPasswordOtp: () => generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements: () => getActiveRegisterConsentRequirements,
   getCategoriesByTenant: () => getCategoriesByTenant,
   getCustomer: () => getCustomer,
@@ -50,6 +51,7 @@ __export(index_exports, {
   getProductDetailById: () => getProductDetailById,
   getProductsByTenantAndStore: () => getProductsByTenantAndStore,
   getRegisterTransactionId: () => getRegisterTransactionId,
+  getSetNewPasswordTransactionId: () => getSetNewPasswordTransactionId,
   getTenantId: () => getTenantId,
   getTenantIdByDomain: () => getTenantIdByDomain,
   getToken: () => getToken,
@@ -70,6 +72,7 @@ __export(index_exports, {
   sendRegisterVerifyAadhaarOtp: () => sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp: () => sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp: () => sendRegisterVerifyMobileOtp,
+  setNewPassword: () => setNewPassword,
   setTenantId: () => setTenantId,
   setToken: () => setToken,
   setUserDetails: () => setUserDetails,
@@ -163,6 +166,7 @@ var clearUserDetails = () => {
 // src/services/authService.js
 var currentTenantId = null;
 var currentRegisterTransactionId = null;
+var currentSetNewPasswordTransactionId = null;
 var extractToken = (res) => {
   const headers = (res == null ? void 0 : res.headers) || {};
   const data = (res == null ? void 0 : res.data) || {};
@@ -192,6 +196,12 @@ var getTenantId = () => {
 var getRegisterTransactionId = () => {
   if (currentRegisterTransactionId) {
     return currentRegisterTransactionId;
+  }
+  return null;
+};
+var getSetNewPasswordTransactionId = () => {
+  if (currentSetNewPasswordTransactionId) {
+    return currentSetNewPasswordTransactionId;
   }
   return null;
 };
@@ -314,6 +324,51 @@ var resendRegisterOtp = async ({
   if (transactionId) {
     currentRegisterTransactionId = String(transactionId);
   }
+  return (res == null ? void 0 : res.data) || res;
+};
+var generateSetNewPasswordOtp = async ({
+  username,
+  tenantSubDomain
+}) => {
+  var _a, _b;
+  const res = await apiClient_default.post(
+    "/auth-service/noauth/password/setNewPassword/generateOtp",
+    {
+      username,
+      tenantSubDomain
+    }
+  );
+  const transactionId = (res == null ? void 0 : res.transactionId) || ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.transactionId) || ((_b = res == null ? void 0 : res.response) == null ? void 0 : _b.transactionId);
+  if (transactionId) {
+    currentSetNewPasswordTransactionId = String(transactionId);
+  }
+  return (res == null ? void 0 : res.data) || res;
+};
+var setNewPassword = async ({
+  username,
+  transactionId,
+  otp,
+  newPassword,
+  confirmPassword,
+  tenantSubDomain
+}) => {
+  const resolvedTransactionId = transactionId || currentSetNewPasswordTransactionId || null;
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call generateSetNewPasswordOtp first or pass transactionId explicitly."
+    );
+  }
+  const res = await apiClient_default.post(
+    "/auth-service/noauth/password/setNewPassword",
+    {
+      username,
+      transactionId: resolvedTransactionId,
+      otp,
+      newPassword,
+      confirmPassword,
+      tenantSubDomain
+    }
+  );
   return (res == null ? void 0 : res.data) || res;
 };
 var sendRegisterVerifyMobileOtp = async ({
@@ -564,6 +619,7 @@ var logout = async () => {
     clearUserDetails();
     currentTenantId = null;
     currentRegisterTransactionId = null;
+    currentSetNewPasswordTransactionId = null;
   }
 };
 
@@ -1260,6 +1316,7 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
   ecomLogin,
   editCustomerAddress,
   generatePaymentLink,
+  generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements,
   getCategoriesByTenant,
   getCustomer,
@@ -1270,6 +1327,7 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
   getProductDetailById,
   getProductsByTenantAndStore,
   getRegisterTransactionId,
+  getSetNewPasswordTransactionId,
   getTenantId,
   getTenantIdByDomain,
   getToken,
@@ -1290,6 +1348,7 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
   sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp,
+  setNewPassword,
   setTenantId,
   setToken,
   setUserDetails,
