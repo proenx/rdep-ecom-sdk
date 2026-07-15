@@ -833,6 +833,37 @@ var editCustomerAddress = async ({
     throw error;
   }
 };
+var addBankDetails = async (bankDetailsRequest = {}) => {
+  var _a;
+  try {
+    if (!bankDetailsRequest || typeof bankDetailsRequest !== "object") {
+      throw new Error("addBankDetails requires a valid request object");
+    }
+    const { bankAccountNumber, bankIfsc } = bankDetailsRequest;
+    if (!bankAccountNumber || String(bankAccountNumber).trim() === "") {
+      throw new Error("addBankDetails requires bankAccountNumber");
+    }
+    if (!bankIfsc || String(bankIfsc).trim() === "") {
+      throw new Error("addBankDetails requires bankIfsc");
+    }
+    const endpoint = "/customer-service/cws/customer/addBankDetails";
+    const res = await apiClient_default.post(endpoint, bankDetailsRequest);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    const addBankDetailsResponse = responseData || {};
+    console.log("Add Bank Details API Response:", addBankDetailsResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Bank Details API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 
 // src/services/orderService.js
 var extractTokenFromResponse2 = (res) => {
@@ -966,6 +997,30 @@ var generatePaymentLink = async (orderId) => {
   } catch (error) {
     console.error(
       "Generate Payment Link API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var initiateRazorPayPayment = async (orderId) => {
+  var _a;
+  try {
+    if (!orderId) {
+      throw new Error("initiateRazorPayPayment requires an orderId");
+    }
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient_default.get(
+      `/order-service/ws/ecom/order/initiateRazorPayPayment/${encodedOrderId}`
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Razorpay Payment API Error:",
       ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
     );
     throw error;
@@ -1215,6 +1270,7 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
   }
 };
 export {
+  addBankDetails,
   addCustomerAddress,
   addItemToCart,
   cancelOrderBySku,
@@ -1243,6 +1299,7 @@ export {
   getToken,
   getUserDetails,
   initClient,
+  initiateRazorPayPayment,
   login,
   logout,
   placeOrder,

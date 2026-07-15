@@ -145,3 +145,46 @@ export const editCustomerAddress = async ({
     throw error;
   }
 };
+
+/**
+ * Add customer bank details
+ */
+export const addBankDetails = async (bankDetailsRequest = {}) => {
+  try {
+    if (!bankDetailsRequest || typeof bankDetailsRequest !== "object") {
+      throw new Error("addBankDetails requires a valid request object");
+    }
+
+    const { bankAccountNumber, bankIfsc } = bankDetailsRequest;
+
+    if (!bankAccountNumber || String(bankAccountNumber).trim() === "") {
+      throw new Error("addBankDetails requires bankAccountNumber");
+    }
+
+    if (!bankIfsc || String(bankIfsc).trim() === "") {
+      throw new Error("addBankDetails requires bankIfsc");
+    }
+
+    const endpoint = "/customer-service/cws/customer/addBankDetails";
+    const res = await apiClient.post(endpoint, bankDetailsRequest);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    const addBankDetailsResponse = responseData || {};
+    console.log("Add Bank Details API Response:", addBankDetailsResponse);
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Bank Details API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};

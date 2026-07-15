@@ -4,6 +4,7 @@ import {
   addCustomerAddress,
   editCustomerAddress,
   getCustomerAddress,
+  addBankDetails,
   setToken,
   getToken,
   login,
@@ -128,6 +129,22 @@ const run = async () => {
 
     if (!addressResponse) {
       throw new Error("getCustomerAddress failed: empty response");
+    }
+
+    const bankDetailsRequest = {
+      bankAccountNumber: "40100123456781",
+      bankIfsc: "SBIN0021745",
+    };
+
+    const bankDetailsResponse = await addBankDetails(bankDetailsRequest);
+
+    console.log(
+      "ADD BANK DETAILS RESPONSE:\n",
+      JSON.stringify(bankDetailsResponse || {}, null, 2),
+    );
+
+    if (!bankDetailsResponse) {
+      throw new Error("addBankDetails failed: empty response");
     }
 
     console.log("CUSTOMER TEST PASSED");

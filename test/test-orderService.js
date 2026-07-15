@@ -4,6 +4,7 @@ import {
   recordOrderPayment,
   checkTransactionStatus,
   generatePaymentLink,
+  initiateRazorPayPayment,
   getOrderList,
   getOrderById,
   setToken,
@@ -156,6 +157,14 @@ const run = async () => {
     console.log(
       "GENERATE PAYMENT LINK RESPONSE:",
       JSON.stringify(paymentLinkResponse, null, 2),
+    );
+
+    const razorPayResponse = await initiateRazorPayPayment(
+      placeOrderResponse.orderId || paymentRequest.orderId,
+    );
+    console.log(
+      "INITIATE RAZORPAY PAYMENT RESPONSE:",
+      JSON.stringify(razorPayResponse, null, 2),
     );
   } catch (e) {
     console.error("ORDER TEST FAILED");
