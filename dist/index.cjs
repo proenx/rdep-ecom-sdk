@@ -29,6 +29,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.js
 var index_exports = {};
 __export(index_exports, {
+  addBankDetails: () => addBankDetails,
   addCustomerAddress: () => addCustomerAddress,
   addItemToCart: () => addItemToCart,
   cancelOrderBySku: () => cancelOrderBySku,
@@ -922,6 +923,37 @@ var editCustomerAddress = async ({
     throw error;
   }
 };
+var addBankDetails = async (bankDetailsRequest = {}) => {
+  var _a;
+  try {
+    if (!bankDetailsRequest || typeof bankDetailsRequest !== "object") {
+      throw new Error("addBankDetails requires a valid request object");
+    }
+    const { bankAccountNumber, bankIfsc } = bankDetailsRequest;
+    if (!bankAccountNumber || String(bankAccountNumber).trim() === "") {
+      throw new Error("addBankDetails requires bankAccountNumber");
+    }
+    if (!bankIfsc || String(bankIfsc).trim() === "") {
+      throw new Error("addBankDetails requires bankIfsc");
+    }
+    const endpoint = "/customer-service/cws/customer/addBankDetails";
+    const res = await apiClient_default.post(endpoint, bankDetailsRequest);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    const addBankDetailsResponse = responseData || {};
+    console.log("Add Bank Details API Response:", addBankDetailsResponse);
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Bank Details API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 
 // src/services/orderService.js
 var extractTokenFromResponse2 = (res) => {
@@ -1305,6 +1337,7 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
 };
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  addBankDetails,
   addCustomerAddress,
   addItemToCart,
   cancelOrderBySku,
