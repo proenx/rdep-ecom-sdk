@@ -141,6 +141,7 @@ var customerLogin = async ({ username, password, domainName }) => {
   }
   return user;
 };
+var login = ecomLogin;
 var register = async ({
   firstName,
   middleName,
@@ -1073,7 +1074,57 @@ var getProductsByTenantAndStore = async ({
     throw error;
   }
 };
-var getProductDetailById = async ({ tenantId, productId } = {}) => {
+var searchProductsV2 = async ({
+  tenantId,
+  storeId,
+  search = "",
+  pageNo = 0,
+  limit = 20,
+  sortBy = "createdDate",
+  sortOrder = "DESC",
+  authToken
+} = {}) => {
+  var _a, _b, _c;
+  try {
+    const resolvedTenantId = await resolveTenantId(tenantId);
+    const resolvedStoreId = storeId !== void 0 && storeId !== null && storeId !== "" ? String(storeId) : null;
+    if (!resolvedStoreId) {
+      throw new Error("searchProductsV2 requires a storeId");
+    }
+    const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
+    const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
+    const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
+    console.log("Search Products V2 API Endpoint:", endpoint);
+    const payload = {
+      search,
+      pageNo,
+      limit,
+      sortBy,
+      sortOrder
+    };
+    const config = {};
+    if (authToken) {
+      config.headers = {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json"
+      };
+    }
+    const res = Object.keys(config).length ? await apiClient_default.post(endpoint, payload, config) : await apiClient_default.post(endpoint, payload);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Search Products V2 API Error:",
+      ((_c = error == null ? void 0 : error.response) == null ? void 0 : _c.data) || error.message
+    );
+    throw error;
+  }
+};
+var getProductDetailById = async ({ tenantId, productId, variant = false, authToken } = {}) => {
   var _a, _b, _c;
   try {
     const resolvedTenantId = await resolveTenantId(tenantId);
@@ -1083,9 +1134,19 @@ var getProductDetailById = async ({ tenantId, productId } = {}) => {
     }
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedProductId = encodeURIComponent(String(resolvedProductId));
-    const endpoint = `/product-service/ecom/${encodedTenantId}/product-overview/${encodedProductId}`;
+    let endpoint = `/product-service/ecom/${encodedTenantId}/product-overview/${encodedProductId}`;
+    if (variant) {
+      endpoint += "?variant=true";
+    }
     console.log("Product Overview API Endpoint:", endpoint);
-    const res = await apiClient_default.get(endpoint);
+    const config = {};
+    if (authToken) {
+      config.headers = {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json"
+      };
+    }
+    const res = Object.keys(config).length ? await apiClient_default.get(endpoint, config) : await apiClient_default.get(endpoint);
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
     if (token) {
@@ -1127,6 +1188,7 @@ export {
   getToken,
   getUserDetails,
   initClient,
+  login,
   logout,
   placeOrder,
   recordOrderPayment,
@@ -1137,6 +1199,7 @@ export {
   resendRegisterOtp,
   saveRegisterAadhaarAddress,
   saveRegisterDetails,
+  searchProductsV2,
   sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp,
