@@ -31,7 +31,7 @@ export const getCustomer = async () => {
     }
 
     const customerResponse = responseData || {};
-    console.log("Customer API Response:", customerResponse);
+    // console.log("Customer API Response:", customerResponse);
 
     return responseData;
   } catch (error) {
@@ -60,7 +60,7 @@ export const getCustomerAddress = async () => {
     }
 
     const addressResponse = responseData || {};
-    console.log("Customer Address API Response:", addressResponse);
+    // console.log("Customer Address API Response:", addressResponse);
 
     return responseData;
   } catch (error) {
@@ -93,7 +93,7 @@ export const addCustomerAddress = async (addressRequest = {}) => {
     }
 
     const addAddressResponse = responseData || {};
-    console.log("Add Customer Address API Response:", addAddressResponse);
+    // console.log("Add Customer Address API Response:", addAddressResponse);
 
     return responseData;
   } catch (error) {
@@ -134,7 +134,7 @@ export const editCustomerAddress = async ({
     }
 
     const editAddressResponse = responseData || {};
-    console.log("Edit Customer Address API Response:", editAddressResponse);
+    // console.log("Edit Customer Address API Response:", editAddressResponse);
 
     return responseData;
   } catch (error) {
@@ -177,7 +177,7 @@ export const addBankDetails = async (bankDetailsRequest = {}) => {
     }
 
     const addBankDetailsResponse = responseData || {};
-    console.log("Add Bank Details API Response:", addBankDetailsResponse);
+    // console.log("Add Bank Details API Response:", addBankDetailsResponse);
 
     return responseData;
   } catch (error) {

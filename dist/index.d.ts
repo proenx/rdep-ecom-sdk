@@ -808,7 +808,7 @@ const addItemToCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const addCart = responseData || {};
-    console.log("Add To Cart API Response:", addCart);
+    // console.log("Add To Cart API Response:", addCart);
 
     return responseData;
   } catch (error) {
@@ -851,7 +851,7 @@ const updateItemQty = async ({
     }
     saveCartIdFromResponse(responseData);
     const updateCart = responseData || {};
-    console.log("response from sdk", updateCart);
+    // console.log("response from sdk", updateCart);
 
     return responseData;
   } catch (error) {
@@ -898,7 +898,7 @@ const refreshCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const refreshCartResponse = responseData || {};
-    console.log("Refresh Cart API Response:", refreshCartResponse);
+    // console.log("Refresh Cart API Response:", refreshCartResponse);
 
     return responseData;
   } catch (error) {
@@ -941,7 +941,7 @@ const removeItemFromCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const removeCartResponse = responseData || {};
-    console.log("Remove Item API Response:", removeCartResponse);
+    // console.log("Remove Item API Response:", removeCartResponse);
 
     return responseData;
   } catch (error) {
@@ -984,7 +984,7 @@ const getCustomer = async () => {
     }
 
     const customerResponse = responseData || {};
-    console.log("Customer API Response:", customerResponse);
+    // console.log("Customer API Response:", customerResponse);
 
     return responseData;
   } catch (error) {
@@ -1013,7 +1013,7 @@ const getCustomerAddress = async () => {
     }
 
     const addressResponse = responseData || {};
-    console.log("Customer Address API Response:", addressResponse);
+    // console.log("Customer Address API Response:", addressResponse);
 
     return responseData;
   } catch (error) {
@@ -1046,7 +1046,7 @@ const addCustomerAddress = async (addressRequest = {}) => {
     }
 
     const addAddressResponse = responseData || {};
-    console.log("Add Customer Address API Response:", addAddressResponse);
+    // console.log("Add Customer Address API Response:", addAddressResponse);
 
     return responseData;
   } catch (error) {
@@ -1087,7 +1087,7 @@ const editCustomerAddress = async ({
     }
 
     const editAddressResponse = responseData || {};
-    console.log("Edit Customer Address API Response:", editAddressResponse);
+    // console.log("Edit Customer Address API Response:", editAddressResponse);
 
     return responseData;
   } catch (error) {
@@ -1130,7 +1130,7 @@ const addBankDetails = async (bankDetailsRequest = {}) => {
     }
 
     const addBankDetailsResponse = responseData || {};
-    console.log("Add Bank Details API Response:", addBankDetailsResponse);
+    // console.log("Add Bank Details API Response:", addBankDetailsResponse);
 
     return responseData;
   } catch (error) {
@@ -1319,10 +1319,10 @@ const generatePaymentLink = async (orderId) => {
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;
-    console.log(
-      "Generate Payment Link API Response:",
-      JSON.stringify(responseData || {}, null, 2),
-    );
+    // console.log(
+    //   "Generate Payment Link API Response:",
+    //   JSON.stringify(responseData || {}, null, 2),
+    // );
 
     const token = extractTokenFromResponse(res);
     if (token) {
@@ -1330,7 +1330,7 @@ const generatePaymentLink = async (orderId) => {
     }
 
     const paymentLinkResponse = responseData || {};
-    console.log("Generate Payment Link API Response:", paymentLinkResponse);
+    // console.log("Generate Payment Link API Response:", paymentLinkResponse);
 
     return responseData;
   } catch (error) {
@@ -1448,7 +1448,7 @@ const getOrderList = async () => {
     }
 
     const orderListResponse = responseData || {};
-    console.log("Order List API Response:", orderListResponse);
+    // console.log("Order List API Response:", orderListResponse);
 
     return responseData;
   } catch (error) {
@@ -1483,7 +1483,7 @@ const getOrderById = async (orderId) => {
     }
 
     const orderByIdResponse = responseData || {};
-    console.log("Order By Id API Response:", orderByIdResponse);
+    // console.log("Order By Id API Response:", orderByIdResponse);
 
     return responseData;
   } catch (error) {
@@ -1532,7 +1532,7 @@ const getCategoriesByTenant = async (tenantId) => {
     const resolvedTenantId = await resolveTenantId(tenantId);
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/category`;
-    console.log("Category API Endpoint:", endpoint);
+    // console.log("Category API Endpoint:", endpoint);
 
     const res = await apiClient.get(endpoint);
 
@@ -1575,7 +1575,7 @@ const getFiltersByTenantAndStore = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedCategoryId = encodeURIComponent(String(resolvedCategoryId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/filters/${encodedCategoryId}`;
-    console.log("Filters API Endpoint:", endpoint);
+    // console.log("Filters API Endpoint:", endpoint);
 
     const res = await apiClient.get(endpoint);
 
@@ -1621,7 +1621,7 @@ const getProductsByTenantAndStore = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
-    console.log("Products API Endpoint:", endpoint);
+    // console.log("Products API Endpoint:", endpoint);
 
     const payload = {
       filters,
@@ -1678,7 +1678,7 @@ const searchProductsV2 = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
-    console.log("Search Products V2 API Endpoint:", endpoint);
+    // console.log("Search Products V2 API Endpoint:", endpoint);
 
     const payload = {
       search,
@@ -1720,7 +1720,12 @@ const searchProductsV2 = async ({
 /**
  * Fetch product overview by tenant and product
  */
-const getProductDetailById = async ({ tenantId, productId, variant = false, authToken } = {}) => {
+const getProductDetailById = async ({
+  tenantId,
+  productId,
+  variant = false,
+  authToken,
+} = {}) => {
   try {
     const resolvedTenantId = await resolveTenantId(tenantId);
     const resolvedProductId =
@@ -1738,7 +1743,7 @@ const getProductDetailById = async ({ tenantId, productId, variant = false, auth
     if (variant) {
       endpoint += "?variant=true";
     }
-    console.log("Product Overview API Endpoint:", endpoint);
+    // console.log("Product Overview API Endpoint:", endpoint);
 
     const config = {};
     if (authToken) {
@@ -1748,7 +1753,9 @@ const getProductDetailById = async ({ tenantId, productId, variant = false, auth
       };
     }
 
-    const res = Object.keys(config).length ? await apiClient.get(endpoint, config) : await apiClient.get(endpoint);
+    const res = Object.keys(config).length
+      ? await apiClient.get(endpoint, config)
+      : await apiClient.get(endpoint);
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;

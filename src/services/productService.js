@@ -39,7 +39,7 @@ export const getCategoriesByTenant = async (tenantId) => {
     const resolvedTenantId = await resolveTenantId(tenantId);
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/category`;
-    console.log("Category API Endpoint:", endpoint);
+    // console.log("Category API Endpoint:", endpoint);
 
     const res = await apiClient.get(endpoint);
 
@@ -82,7 +82,7 @@ export const getFiltersByTenantAndStore = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedCategoryId = encodeURIComponent(String(resolvedCategoryId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/filters/${encodedCategoryId}`;
-    console.log("Filters API Endpoint:", endpoint);
+    // console.log("Filters API Endpoint:", endpoint);
 
     const res = await apiClient.get(endpoint);
 
@@ -128,7 +128,7 @@ export const getProductsByTenantAndStore = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
-    console.log("Products API Endpoint:", endpoint);
+    // console.log("Products API Endpoint:", endpoint);
 
     const payload = {
       filters,
@@ -185,7 +185,7 @@ export const searchProductsV2 = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
-    console.log("Search Products V2 API Endpoint:", endpoint);
+    // console.log("Search Products V2 API Endpoint:", endpoint);
 
     const payload = {
       search,
@@ -227,7 +227,12 @@ export const searchProductsV2 = async ({
 /**
  * Fetch product overview by tenant and product
  */
-export const getProductDetailById = async ({ tenantId, productId, variant = false, authToken } = {}) => {
+export const getProductDetailById = async ({
+  tenantId,
+  productId,
+  variant = false,
+  authToken,
+} = {}) => {
   try {
     const resolvedTenantId = await resolveTenantId(tenantId);
     const resolvedProductId =
@@ -245,7 +250,7 @@ export const getProductDetailById = async ({ tenantId, productId, variant = fals
     if (variant) {
       endpoint += "?variant=true";
     }
-    console.log("Product Overview API Endpoint:", endpoint);
+    // console.log("Product Overview API Endpoint:", endpoint);
 
     const config = {};
     if (authToken) {
@@ -255,7 +260,9 @@ export const getProductDetailById = async ({ tenantId, productId, variant = fals
       };
     }
 
-    const res = Object.keys(config).length ? await apiClient.get(endpoint, config) : await apiClient.get(endpoint);
+    const res = Object.keys(config).length
+      ? await apiClient.get(endpoint, config)
+      : await apiClient.get(endpoint);
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;
