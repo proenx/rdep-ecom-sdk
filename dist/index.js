@@ -614,7 +614,6 @@ var addItemToCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const addCart = responseData || {};
-    console.log("Add To Cart API Response:", addCart);
     return responseData;
   } catch (error) {
     console.error(
@@ -648,7 +647,6 @@ var updateItemQty = async ({
     }
     saveCartIdFromResponse(responseData);
     const updateCart = responseData || {};
-    console.log("response from sdk", updateCart);
     return responseData;
   } catch (error) {
     console.error(
@@ -686,7 +684,6 @@ var refreshCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const refreshCartResponse = responseData || {};
-    console.log("Refresh Cart API Response:", refreshCartResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -720,7 +717,6 @@ var removeItemFromCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const removeCartResponse = responseData || {};
-    console.log("Remove Item API Response:", removeCartResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -747,7 +743,6 @@ var getCustomer = async () => {
       setToken(token);
     }
     const customerResponse = responseData || {};
-    console.log("Customer API Response:", customerResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -768,7 +763,6 @@ var getCustomerAddress = async () => {
       setToken(token);
     }
     const addressResponse = responseData || {};
-    console.log("Customer Address API Response:", addressResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -792,7 +786,6 @@ var addCustomerAddress = async (addressRequest = {}) => {
       setToken(token);
     }
     const addAddressResponse = responseData || {};
-    console.log("Add Customer Address API Response:", addAddressResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -823,7 +816,6 @@ var editCustomerAddress = async ({
       setToken(token);
     }
     const editAddressResponse = responseData || {};
-    console.log("Edit Customer Address API Response:", editAddressResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -854,7 +846,6 @@ var addBankDetails = async (bankDetailsRequest = {}) => {
       setToken(token);
     }
     const addBankDetailsResponse = responseData || {};
-    console.log("Add Bank Details API Response:", addBankDetailsResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -983,16 +974,11 @@ var generatePaymentLink = async (orderId) => {
       `/order-service/ws/ecom/order/generatePaymentLink/${encodedOrderId}`
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
-    console.log(
-      "Generate Payment Link API Response:",
-      JSON.stringify(responseData || {}, null, 2)
-    );
     const token = extractTokenFromResponse2(res);
     if (token) {
       setToken(token);
     }
     const paymentLinkResponse = responseData || {};
-    console.log("Generate Payment Link API Response:", paymentLinkResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -1080,7 +1066,6 @@ var getOrderList = async () => {
       setToken(token);
     }
     const orderListResponse = responseData || {};
-    console.log("Order List API Response:", orderListResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -1105,7 +1090,6 @@ var getOrderById = async (orderId) => {
       setToken(token);
     }
     const orderByIdResponse = responseData || {};
-    console.log("Order By Id API Response:", orderByIdResponse);
     return responseData;
   } catch (error) {
     console.error(
@@ -1141,7 +1125,6 @@ var getCategoriesByTenant = async (tenantId) => {
     const resolvedTenantId = await resolveTenantId(tenantId);
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/category`;
-    console.log("Category API Endpoint:", endpoint);
     const res = await apiClient_default.get(endpoint);
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
@@ -1171,7 +1154,6 @@ var getFiltersByTenantAndStore = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedCategoryId = encodeURIComponent(String(resolvedCategoryId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/filters/${encodedCategoryId}`;
-    console.log("Filters API Endpoint:", endpoint);
     const res = await apiClient_default.get(endpoint);
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = ((_a = res == null ? void 0 : res.headers) == null ? void 0 : _a.authorization) || ((_b = res == null ? void 0 : res.headers) == null ? void 0 : _b.Authorization);
@@ -1204,7 +1186,6 @@ var getProductsByTenantAndStore = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
-    console.log("Products API Endpoint:", endpoint);
     const payload = {
       filters,
       page_size: pageSize,
@@ -1245,7 +1226,6 @@ var searchProductsV2 = async ({
     const encodedTenantId = encodeURIComponent(String(resolvedTenantId));
     const encodedStoreId = encodeURIComponent(String(resolvedStoreId));
     const endpoint = `/product-service/ecom/${encodedTenantId}/products/${encodedStoreId}`;
-    console.log("Search Products V2 API Endpoint:", endpoint);
     const payload = {
       search,
       pageNo,
@@ -1275,7 +1255,12 @@ var searchProductsV2 = async ({
     throw error;
   }
 };
-var getProductDetailById = async ({ tenantId, productId, variant = false, authToken } = {}) => {
+var getProductDetailById = async ({
+  tenantId,
+  productId,
+  variant = false,
+  authToken
+} = {}) => {
   var _a, _b, _c;
   try {
     const resolvedTenantId = await resolveTenantId(tenantId);
@@ -1289,7 +1274,6 @@ var getProductDetailById = async ({ tenantId, productId, variant = false, authTo
     if (variant) {
       endpoint += "?variant=true";
     }
-    console.log("Product Overview API Endpoint:", endpoint);
     const config = {};
     if (authToken) {
       config.headers = {
