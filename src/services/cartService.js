@@ -114,7 +114,7 @@ export const addItemToCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const addCart = responseData || {};
-    console.log("Add To Cart API Response:", addCart);
+    // console.log("Add To Cart API Response:", addCart);
 
     return responseData;
   } catch (error) {
@@ -157,7 +157,7 @@ export const updateItemQty = async ({
     }
     saveCartIdFromResponse(responseData);
     const updateCart = responseData || {};
-    console.log("response from sdk", updateCart);
+    // console.log("response from sdk", updateCart);
 
     return responseData;
   } catch (error) {
@@ -204,7 +204,7 @@ export const refreshCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const refreshCartResponse = responseData || {};
-    console.log("Refresh Cart API Response:", refreshCartResponse);
+    // console.log("Refresh Cart API Response:", refreshCartResponse);
 
     return responseData;
   } catch (error) {
@@ -247,7 +247,7 @@ export const removeItemFromCart = async ({
     }
     saveCartIdFromResponse(responseData);
     const removeCartResponse = responseData || {};
-    console.log("Remove Item API Response:", removeCartResponse);
+    // console.log("Remove Item API Response:", removeCartResponse);
 
     return responseData;
   } catch (error) {

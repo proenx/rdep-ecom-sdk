@@ -178,10 +178,10 @@ export const generatePaymentLink = async (orderId) => {
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;
-    console.log(
-      "Generate Payment Link API Response:",
-      JSON.stringify(responseData || {}, null, 2),
-    );
+    // console.log(
+    //   "Generate Payment Link API Response:",
+    //   JSON.stringify(responseData || {}, null, 2),
+    // );
 
     const token = extractTokenFromResponse(res);
     if (token) {
@@ -189,7 +189,7 @@ export const generatePaymentLink = async (orderId) => {
     }
 
     const paymentLinkResponse = responseData || {};
-    console.log("Generate Payment Link API Response:", paymentLinkResponse);
+    // console.log("Generate Payment Link API Response:", paymentLinkResponse);
 
     return responseData;
   } catch (error) {
@@ -307,7 +307,7 @@ export const getOrderList = async () => {
     }
 
     const orderListResponse = responseData || {};
-    console.log("Order List API Response:", orderListResponse);
+    // console.log("Order List API Response:", orderListResponse);
 
     return responseData;
   } catch (error) {
@@ -342,7 +342,7 @@ export const getOrderById = async (orderId) => {
     }
 
     const orderByIdResponse = responseData || {};
-    console.log("Order By Id API Response:", orderByIdResponse);
+    // console.log("Order By Id API Response:", orderByIdResponse);
 
     return responseData;
   } catch (error) {
