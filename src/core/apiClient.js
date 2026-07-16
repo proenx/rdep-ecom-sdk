@@ -26,7 +26,8 @@ apiClient.interceptors.response.use(
       res.config.url.includes("/auth-service/ecom/auth") ||
       res.config.url.includes("/auth-service/cws/auth") ||
       res.config.url.includes("/auth-service/cws/register") ||
-      res.config.url.includes("/auth-service/ecom/register")
+      res.config.url.includes("/auth-service/ecom/register") ||
+      res.config.url.includes("/auth-service/ecom/refresh-token/refresh")
     ) {
       return res;
     }

@@ -48,7 +48,8 @@ apiClient.interceptors.response.use(
       res.config.url.includes("/auth-service/ecom/auth") ||
       res.config.url.includes("/auth-service/cws/auth") ||
       res.config.url.includes("/auth-service/cws/register") ||
-      res.config.url.includes("/auth-service/ecom/register")
+      res.config.url.includes("/auth-service/ecom/register") ||
+      res.config.url.includes("/auth-service/ecom/refresh-token/refresh")
     ) {
       return res;
     }
@@ -195,6 +196,18 @@ const customerLogin = async ({ username, password, domainName }) => {
 };
 
 const login = ecomLogin;
+
+/**
+ * Refresh auth token
+ */
+const refreshToken = async () => {
+  const res = await apiClient.get("/auth-service/ecom/refresh-token/refresh");
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  return res?.data || res || {};
+};
 
 /**
  * Register
@@ -1775,4 +1788,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateRazorPayPayment, login, logout, placeOrder, recordOrderPayment, refreshCart, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyRazorpayStatus };
+export { addBankDetails, addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateRazorPayPayment, login, logout, placeOrder, recordOrderPayment, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyRazorpayStatus };
