@@ -64,6 +64,7 @@ __export(index_exports, {
   placeOrder: () => placeOrder,
   recordOrderPayment: () => recordOrderPayment,
   refreshCart: () => refreshCart,
+  refreshToken: () => refreshToken,
   register: () => register,
   registerEcom: () => registerEcom,
   removeItemFromCart: () => removeItemFromCart,
@@ -128,7 +129,7 @@ apiClient.interceptors.request.use((config) => {
 });
 apiClient.interceptors.response.use(
   (res) => {
-    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register") || res.config.url.includes("/auth-service/ecom/register")) {
+    if (res.config.url.includes("/auth-service/ecom/auth") || res.config.url.includes("/auth-service/cws/auth") || res.config.url.includes("/auth-service/cws/register") || res.config.url.includes("/auth-service/ecom/register") || res.config.url.includes("/auth-service/ecom/refresh-token/refresh")) {
       return res;
     }
     return res.data;
@@ -241,6 +242,14 @@ var customerLogin = async ({ username, password, domainName }) => {
   return user;
 };
 var login = ecomLogin;
+var refreshToken = async () => {
+  const res = await apiClient_default.get("/auth-service/ecom/refresh-token/refresh");
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  return (res == null ? void 0 : res.data) || res || {};
+};
 var register = async ({
   firstName,
   middleName,
@@ -1425,6 +1434,7 @@ var getProductDetailById = async ({
   placeOrder,
   recordOrderPayment,
   refreshCart,
+  refreshToken,
   register,
   registerEcom,
   removeItemFromCart,

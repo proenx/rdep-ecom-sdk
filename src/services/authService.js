@@ -111,6 +111,18 @@ export const customerLogin = async ({ username, password, domainName }) => {
 export const login = ecomLogin;
 
 /**
+ * Refresh auth token
+ */
+export const refreshToken = async () => {
+  const res = await apiClient.get("/auth-service/ecom/refresh-token/refresh");
+  const token = extractToken(res);
+  if (token) {
+    setToken(token);
+  }
+  return res?.data || res || {};
+};
+
+/**
  * Register
  */
 export const register = async ({

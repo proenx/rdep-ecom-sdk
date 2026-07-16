@@ -2,6 +2,7 @@ import {
   initClient,
   ecomLogin,
   customerLogin,
+  refreshToken,
   register,
   registerEcom,
   sendRegisterVerifyMobileOtp,
@@ -72,6 +73,8 @@ const run = async () => {
       domainName: tenantDomain,
     }),
   );
+
+  await safeCall("refreshToken", () => refreshToken());
 
   console.log("getUserDetails", getUserDetails());
   console.log("getToken", getToken());
