@@ -57,6 +57,8 @@ const resolveCartId = (incomingCartId) => {
   ) {
     setCartId(incomingCartId);
     return toCartIdPayloadValue(incomingCartId);
+  } else {
+    currentCartId = "";
   }
   return toCartIdPayloadValue(getCartId());
 };
