@@ -188,3 +188,38 @@ export const addBankDetails = async (bankDetailsRequest = {}) => {
     throw error;
   }
 };
+
+/**
+ * Validate customer address pin code
+ */
+export const validatePinCode = async (pincode) => {
+  try {
+    if (
+      pincode === undefined ||
+      pincode === null ||
+      String(pincode).trim() === ""
+    ) {
+      throw new Error("validatePinCode requires a valid pincode");
+    }
+
+    const encodedPincode = encodeURIComponent(String(pincode).trim());
+    const endpoint = `/customer-service/ui/customer/1/address/validate/pinCode/${encodedPincode}`;
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Validate Pin Code API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
