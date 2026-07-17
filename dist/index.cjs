@@ -249,7 +249,11 @@ var refreshToken = async () => {
   if (token) {
     setToken(token);
   }
-  return (res == null ? void 0 : res.data) || res || {};
+  const user = (res == null ? void 0 : res.data) || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
 };
 var register = async ({
   firstName,
@@ -679,6 +683,8 @@ var resolveCartId = (incomingCartId) => {
   if (incomingCartId !== void 0 && incomingCartId !== null && incomingCartId !== "") {
     setCartId(incomingCartId);
     return toCartIdPayloadValue(incomingCartId);
+  } else {
+    currentCartId = "";
   }
   return toCartIdPayloadValue(getCartId());
 };

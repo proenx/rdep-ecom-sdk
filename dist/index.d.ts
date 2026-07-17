@@ -206,7 +206,12 @@ const refreshToken = async () => {
   if (token) {
     setToken(token);
   }
-  return res?.data || res || {};
+  const user = res?.data || {};
+  if (user) {
+    setUserDetails(user);
+  }
+  return user;
+  // return res?.data || res || {};
 };
 
 /**
@@ -764,6 +769,8 @@ const resolveCartId = (incomingCartId) => {
   ) {
     setCartId(incomingCartId);
     return toCartIdPayloadValue(incomingCartId);
+  } else {
+    currentCartId = "";
   }
   return toCartIdPayloadValue(getCartId());
 };
