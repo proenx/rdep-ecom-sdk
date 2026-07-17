@@ -5,6 +5,7 @@ import {
   editCustomerAddress,
   getCustomerAddress,
   addBankDetails,
+  validatePinCode,
   setToken,
   getToken,
   login,
@@ -145,6 +146,18 @@ const run = async () => {
 
     if (!bankDetailsResponse) {
       throw new Error("addBankDetails failed: empty response");
+    }
+
+    const pincodeToValidate = process.env.RDEP_PINCODE || "421202";
+    const validatePinCodeResponse = await validatePinCode(pincodeToValidate);
+
+    console.log(
+      "VALIDATE PINCODE RESPONSE:\n",
+      JSON.stringify(validatePinCodeResponse || {}, null, 2),
+    );
+
+    if (!validatePinCodeResponse) {
+      throw new Error("validatePinCode failed: empty response");
     }
 
     console.log("CUSTOMER TEST PASSED");
