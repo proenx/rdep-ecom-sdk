@@ -863,6 +863,29 @@ var addBankDetails = async (bankDetailsRequest = {}) => {
     throw error;
   }
 };
+var validatePinCode = async (pincode) => {
+  var _a;
+  try {
+    if (pincode === void 0 || pincode === null || String(pincode).trim() === "") {
+      throw new Error("validatePinCode requires a valid pincode");
+    }
+    const encodedPincode = encodeURIComponent(String(pincode).trim());
+    const endpoint = `/customer-service/ui/customer/1/address/validate/pinCode/${encodedPincode}`;
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Validate Pin Code API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 
 // src/services/orderService.js
 var extractTokenFromResponse2 = (res) => {
@@ -1356,6 +1379,7 @@ export {
   setToken,
   setUserDetails,
   updateItemQty,
+  validatePinCode,
   validateRegisterBankAccount,
   validateRegisterOtp,
   validateRegisterPan,
