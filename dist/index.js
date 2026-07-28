@@ -869,6 +869,60 @@ var addBankDetails = async (bankDetailsRequest = {}) => {
     throw error;
   }
 };
+var addCustomerBeneficiary = async (beneficiaryRequest = {}) => {
+  var _a;
+  try {
+    if (!beneficiaryRequest || typeof beneficiaryRequest !== "object") {
+      throw new Error("addCustomerBeneficiary requires a valid request object");
+    }
+    const { fullName, emailId, mobileNumber, relationship } = beneficiaryRequest;
+    if (!fullName || String(fullName).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires fullName");
+    }
+    if (!emailId || String(emailId).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires emailId");
+    }
+    if (!mobileNumber || String(mobileNumber).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires mobileNumber");
+    }
+    if (!relationship || String(relationship).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires relationship");
+    }
+    const endpoint = "/customer-service/ui/customer/beneficiary";
+    const res = await apiClient_default.post(endpoint, beneficiaryRequest);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Customer Beneficiary API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var getCustomerBeneficiaries = async () => {
+  var _a;
+  try {
+    const endpoint = "/customer-service/ui/customer/beneficiary";
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Get Customer Beneficiaries API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var validatePinCode = async (pincode) => {
   var _a;
   try {
@@ -1336,6 +1390,7 @@ var getProductDetailById = async ({
 export {
   addBankDetails,
   addCustomerAddress,
+  addCustomerBeneficiary,
   addItemToCart,
   cancelOrderBySku,
   checkTenant,
@@ -1351,6 +1406,7 @@ export {
   getCategoriesByTenant,
   getCustomer,
   getCustomerAddress,
+  getCustomerBeneficiaries,
   getFiltersByTenantAndStore,
   getOrderById,
   getOrderList,

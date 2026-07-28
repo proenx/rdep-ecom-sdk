@@ -1163,6 +1163,81 @@ const addBankDetails = async (bankDetailsRequest = {}) => {
 };
 
 /**
+ * Add customer beneficiary
+ */
+const addCustomerBeneficiary = async (beneficiaryRequest = {}) => {
+  try {
+    if (!beneficiaryRequest || typeof beneficiaryRequest !== "object") {
+      throw new Error("addCustomerBeneficiary requires a valid request object");
+    }
+
+    const { fullName, emailId, mobileNumber, relationship } =
+      beneficiaryRequest;
+
+    if (!fullName || String(fullName).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires fullName");
+    }
+
+    if (!emailId || String(emailId).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires emailId");
+    }
+
+    if (!mobileNumber || String(mobileNumber).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires mobileNumber");
+    }
+
+    if (!relationship || String(relationship).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires relationship");
+    }
+
+    const endpoint = "/customer-service/ui/customer/beneficiary";
+    const res = await apiClient.post(endpoint, beneficiaryRequest);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse$1(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Customer Beneficiary API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
+ * Fetch customer beneficiary list
+ */
+const getCustomerBeneficiaries = async () => {
+  try {
+    const endpoint = "/customer-service/ui/customer/beneficiary";
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse$1(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Get Customer Beneficiaries API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
  * Validate customer address pin code
  */
 const validatePinCode = async (pincode) => {
@@ -1830,4 +1905,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateRazorPayPayment, login, logout, placeOrder, recordOrderPayment, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyRazorpayStatus };
+export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateRazorPayPayment, login, logout, placeOrder, recordOrderPayment, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyRazorpayStatus };
