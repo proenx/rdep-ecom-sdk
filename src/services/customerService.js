@@ -190,6 +190,81 @@ export const addBankDetails = async (bankDetailsRequest = {}) => {
 };
 
 /**
+ * Add customer beneficiary
+ */
+export const addCustomerBeneficiary = async (beneficiaryRequest = {}) => {
+  try {
+    if (!beneficiaryRequest || typeof beneficiaryRequest !== "object") {
+      throw new Error("addCustomerBeneficiary requires a valid request object");
+    }
+
+    const { fullName, emailId, mobileNumber, relationship } =
+      beneficiaryRequest;
+
+    if (!fullName || String(fullName).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires fullName");
+    }
+
+    if (!emailId || String(emailId).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires emailId");
+    }
+
+    if (!mobileNumber || String(mobileNumber).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires mobileNumber");
+    }
+
+    if (!relationship || String(relationship).trim() === "") {
+      throw new Error("addCustomerBeneficiary requires relationship");
+    }
+
+    const endpoint = "/customer-service/ui/customer/beneficiary";
+    const res = await apiClient.post(endpoint, beneficiaryRequest);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Add Customer Beneficiary API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
+ * Fetch customer beneficiary list
+ */
+export const getCustomerBeneficiaries = async () => {
+  try {
+    const endpoint = "/customer-service/ui/customer/beneficiary";
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Get Customer Beneficiaries API Error:",
+      error?.response?.data || error.message,
+    );
+    throw error;
+  }
+};
+
+/**
  * Validate customer address pin code
  */
 export const validatePinCode = async (pincode) => {

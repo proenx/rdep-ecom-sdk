@@ -5,6 +5,8 @@ import {
   editCustomerAddress,
   getCustomerAddress,
   addBankDetails,
+  addCustomerBeneficiary,
+  getCustomerBeneficiaries,
   validatePinCode,
   setToken,
   getToken,
@@ -146,6 +148,37 @@ const run = async () => {
 
     if (!bankDetailsResponse) {
       throw new Error("addBankDetails failed: empty response");
+    }
+
+    const addBeneficiaryRequest = {
+      fullName: "John Doe",
+      emailId: "john.doe@test.com",
+      mobileNumber: "9876543222",
+      relationship: "Brother",
+    };
+
+    const addBeneficiaryResponse = await addCustomerBeneficiary(
+      addBeneficiaryRequest,
+    );
+
+    console.log(
+      "ADD CUSTOMER BENEFICIARY RESPONSE:\n",
+      JSON.stringify(addBeneficiaryResponse || {}, null, 2),
+    );
+
+    if (!addBeneficiaryResponse) {
+      throw new Error("addCustomerBeneficiary failed: empty response");
+    }
+
+    const beneficiaryListResponse = await getCustomerBeneficiaries();
+
+    console.log(
+      "GET CUSTOMER BENEFICIARIES RESPONSE:\n",
+      JSON.stringify(beneficiaryListResponse || {}, null, 2),
+    );
+
+    if (!beneficiaryListResponse) {
+      throw new Error("getCustomerBeneficiaries failed: empty response");
     }
 
     const pincodeToValidate = process.env.RDEP_PINCODE || "421202";

@@ -55,6 +55,8 @@ const run = async () => {
       cartItems: [
         {
           id: "SKU1001",
+          taxes: [],
+          discounts: [],
           sku: "SKU1001",
           name: "Sample Product",
           deptNmbr: "D01",
