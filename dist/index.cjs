@@ -60,6 +60,7 @@ __export(index_exports, {
   getToken: () => getToken,
   getUserDetails: () => getUserDetails,
   initClient: () => initClient,
+  initiateHdfcPayment: () => initiateHdfcPayment,
   initiateRazorPayPayment: () => initiateRazorPayPayment,
   login: () => login,
   logout: () => logout,
@@ -90,6 +91,7 @@ __export(index_exports, {
   validateRegisterVerifyAadhaarOtp: () => validateRegisterVerifyAadhaarOtp,
   validateRegisterVerifyEmailOtp: () => validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp: () => validateRegisterVerifyMobileOtp,
+  verifyHdfcStatus: () => verifyHdfcStatus,
   verifyRazorpayStatus: () => verifyRazorpayStatus
 });
 module.exports = __toCommonJS(index_exports);
@@ -1199,6 +1201,54 @@ var initiateRazorPayPayment = async (orderId) => {
     throw error;
   }
 };
+var initiateHdfcPayment = async (orderId) => {
+  var _a;
+  try {
+    if (!orderId) {
+      throw new Error("initiateHdfcPayment requires an orderId");
+    }
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient_default.get(
+      `/order-service/ws/ecom/order/initiateHdfcPayment/${encodedOrderId}`
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate HDFC Payment API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var verifyHdfcStatus = async (uid) => {
+  var _a;
+  try {
+    if (!uid || String(uid).trim() === "") {
+      throw new Error("verifyHdfcStatus requires a uid");
+    }
+    const encodedUid = encodeURIComponent(String(uid));
+    const res = await apiClient_default.get(
+      `/order-service/ws/ecom/order/verifyHdfcStatus/${encodedUid}`
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify HDFC Status API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var verifyRazorpayStatus = async ({
   orderId,
   razorpayPaymentId,
@@ -1516,6 +1566,7 @@ var getProductDetailById = async ({
   getToken,
   getUserDetails,
   initClient,
+  initiateHdfcPayment,
   initiateRazorPayPayment,
   login,
   logout,
@@ -1546,5 +1597,6 @@ var getProductDetailById = async ({
   validateRegisterVerifyAadhaarOtp,
   validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp,
+  verifyHdfcStatus,
   verifyRazorpayStatus
 });

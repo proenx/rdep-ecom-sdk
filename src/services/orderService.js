@@ -236,6 +236,72 @@ export const initiateRazorPayPayment = async (orderId) => {
 };
 
 /**
+ * Initiate HDFC payment
+ */
+export const initiateHdfcPayment = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("initiateHdfcPayment requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/initiateHdfcPayment/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate HDFC Payment API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Verify HDFC payment status
+ */
+export const verifyHdfcStatus = async (uid) => {
+  try {
+    if (!uid || String(uid).trim() === "") {
+      throw new Error("verifyHdfcStatus requires a uid");
+    }
+
+    const encodedUid = encodeURIComponent(String(uid));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/verifyHdfcStatus/${encodedUid}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify HDFC Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
  * Verify Razorpay payment status
  */
 export const verifyRazorpayStatus = async ({
