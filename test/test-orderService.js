@@ -5,6 +5,8 @@ import {
   checkTransactionStatus,
   generatePaymentLink,
   initiateRazorPayPayment,
+  initiateHdfcPayment,
+  verifyHdfcStatus,
   verifyRazorpayStatus,
   getOrderList,
   getOrderById,
@@ -169,6 +171,33 @@ const run = async () => {
       "INITIATE RAZORPAY PAYMENT RESPONSE:",
       JSON.stringify(razorPayResponse, null, 2),
     );
+
+    const hdfcPaymentInitResponse = await initiateHdfcPayment(
+      placeOrderResponse.orderId || paymentRequest.orderId,
+    );
+    console.log(
+      "INITIATE HDFC PAYMENT RESPONSE:",
+      JSON.stringify(hdfcPaymentInitResponse, null, 2),
+    );
+
+    const resolvedHdfcUid =
+      hdfcPaymentInitResponse?.uid ||
+      hdfcPaymentInitResponse?.data?.uid ||
+      hdfcPaymentInitResponse?.paymentUid ||
+      hdfcPaymentInitResponse?.data?.paymentUid ||
+      process.env.RDEP_HDFC_UID;
+
+    if (resolvedHdfcUid) {
+      const verifyHdfcStatusResponse = await verifyHdfcStatus(resolvedHdfcUid);
+      console.log(
+        "VERIFY HDFC STATUS RESPONSE:",
+        JSON.stringify(verifyHdfcStatusResponse, null, 2),
+      );
+    } else {
+      console.log(
+        "VERIFY HDFC STATUS SKIPPED: uid missing in initiate response. Set RDEP_HDFC_UID to test verify API.",
+      );
+    }
 
     const verifyRazorpayStatusResponse = await verifyRazorpayStatus({
       orderId: placeOrderResponse.orderId || paymentRequest.orderId,
