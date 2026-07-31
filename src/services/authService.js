@@ -443,6 +443,46 @@ export const sendRegisterVerifyAadhaarOtp = async ({
 };
 
 /**
+ * Initiate Digilocker session for Aadhaar verification during registration
+ */
+export const initiateRegisterVerifyAadhaarDigilockerSession = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber,
+  digilockerRedirectUrl,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-aadhaar/initiate-digilocker-session",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber,
+      digilockerRedirectUrl,
+    },
+  );
+  return res;
+};
+
+/**
+ * Check Digilocker session status for Aadhaar verification during registration
+ */
+export const checkRegisterVerifyAadhaarDigilockerSession = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/register/verify-aadhaar/check-digilocker-session",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber,
+    },
+  );
+  return res;
+};
+
+/**
  * Validate OTP for Aadhaar verification during registration
  */
 export const validateRegisterVerifyAadhaarOtp = async ({
