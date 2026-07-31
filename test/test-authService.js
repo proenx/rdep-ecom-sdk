@@ -12,6 +12,8 @@ import {
   validateRegisterReference,
   saveRegisterDetails,
   sendRegisterVerifyAadhaarOtp,
+  initiateRegisterVerifyAadhaarDigilockerSession,
+  checkRegisterVerifyAadhaarDigilockerSession,
   validateRegisterVerifyAadhaarOtp,
   saveRegisterAadhaarAddress,
   validateRegisterPan,
@@ -134,6 +136,24 @@ const run = async () => {
 
   // await safeCall("sendRegisterVerifyAadhaarOtp", () =>
   //   sendRegisterVerifyAadhaarOtp({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     aadhaarNumber: "123456789012",
+  //   }),
+  // );
+
+  // await safeCall("initiateRegisterVerifyAadhaarDigilockerSession", () =>
+  //   initiateRegisterVerifyAadhaarDigilockerSession({
+  //     mobileNumber,
+  //     domainName: tenantDomain,
+  //     aadhaarNumber: "123456789012",
+  //     digilockerRedirectUrl:
+  //       "https://ecom-retail.qa.rdep.io/digilocker/complete",
+  //   }),
+  // );
+
+  // await safeCall("checkRegisterVerifyAadhaarDigilockerSession", () =>
+  //   checkRegisterVerifyAadhaarDigilockerSession({
   //     mobileNumber,
   //     domainName: tenantDomain,
   //     aadhaarNumber: "123456789012",
