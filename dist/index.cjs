@@ -34,6 +34,7 @@ __export(index_exports, {
   addCustomerBeneficiary: () => addCustomerBeneficiary,
   addItemToCart: () => addItemToCart,
   cancelOrderBySku: () => cancelOrderBySku,
+  checkRegisterVerifyAadhaarDigilockerSession: () => checkRegisterVerifyAadhaarDigilockerSession,
   checkTenant: () => checkTenant,
   checkTransactionStatus: () => checkTransactionStatus,
   clearToken: () => clearToken,
@@ -62,6 +63,7 @@ __export(index_exports, {
   initClient: () => initClient,
   initiateHdfcPayment: () => initiateHdfcPayment,
   initiateRazorPayPayment: () => initiateRazorPayPayment,
+  initiateRegisterVerifyAadhaarDigilockerSession: () => initiateRegisterVerifyAadhaarDigilockerSession,
   login: () => login,
   logout: () => logout,
   placeOrder: () => placeOrder,
@@ -493,6 +495,38 @@ var sendRegisterVerifyAadhaarOtp = async ({
 }) => {
   const res = await apiClient_default.post(
     "/auth-service/ecom/register/verify-aadhaar/send-otp",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber
+    }
+  );
+  return res;
+};
+var initiateRegisterVerifyAadhaarDigilockerSession = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber,
+  digilockerRedirectUrl
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-aadhaar/initiate-digilocker-session",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber,
+      digilockerRedirectUrl
+    }
+  );
+  return res;
+};
+var checkRegisterVerifyAadhaarDigilockerSession = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-aadhaar/check-digilocker-session",
     {
       mobileNumber,
       domainName,
@@ -1540,6 +1574,7 @@ var getProductDetailById = async ({
   addCustomerBeneficiary,
   addItemToCart,
   cancelOrderBySku,
+  checkRegisterVerifyAadhaarDigilockerSession,
   checkTenant,
   checkTransactionStatus,
   clearToken,
@@ -1568,6 +1603,7 @@ var getProductDetailById = async ({
   initClient,
   initiateHdfcPayment,
   initiateRazorPayPayment,
+  initiateRegisterVerifyAadhaarDigilockerSession,
   login,
   logout,
   placeOrder,

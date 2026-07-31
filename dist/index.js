@@ -403,6 +403,38 @@ var sendRegisterVerifyAadhaarOtp = async ({
   );
   return res;
 };
+var initiateRegisterVerifyAadhaarDigilockerSession = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber,
+  digilockerRedirectUrl
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-aadhaar/initiate-digilocker-session",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber,
+      digilockerRedirectUrl
+    }
+  );
+  return res;
+};
+var checkRegisterVerifyAadhaarDigilockerSession = async ({
+  mobileNumber,
+  domainName,
+  aadhaarNumber
+}) => {
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/register/verify-aadhaar/check-digilocker-session",
+    {
+      mobileNumber,
+      domainName,
+      aadhaarNumber
+    }
+  );
+  return res;
+};
 var validateRegisterVerifyAadhaarOtp = async ({
   mobileNumber,
   domainName,
@@ -1441,6 +1473,7 @@ export {
   addCustomerBeneficiary,
   addItemToCart,
   cancelOrderBySku,
+  checkRegisterVerifyAadhaarDigilockerSession,
   checkTenant,
   checkTransactionStatus,
   clearToken,
@@ -1469,6 +1502,7 @@ export {
   initClient,
   initiateHdfcPayment,
   initiateRazorPayPayment,
+  initiateRegisterVerifyAadhaarDigilockerSession,
   login,
   logout,
   placeOrder,
