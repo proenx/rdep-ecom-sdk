@@ -191,8 +191,10 @@ const run = async () => {
   //   validateRegisterPan({
   //     mobileNumber,
   //     domainName: tenantDomain,
-  //     aadhaarNumber: "123456789012",
+  //     huf: true,
   //     panNumber: "XXXPX1234A",
+  //     hufName: "The HUF",
+  //     hufDateOfIncorporation: "20/12/2020",
   //   }),
   // );
 

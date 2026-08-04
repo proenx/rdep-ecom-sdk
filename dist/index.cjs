@@ -575,13 +575,19 @@ var validateRegisterPan = async ({
   mobileNumber,
   domainName,
   aadhaarNumber,
-  panNumber
+  panNumber,
+  huf,
+  hufName,
+  hufDateOfIncorporation
 }) => {
   const res = await apiClient_default.post("/auth-service/ecom/register/validate-pan", {
     mobileNumber,
     domainName,
     aadhaarNumber,
-    panNumber
+    panNumber,
+    huf,
+    hufName,
+    hufDateOfIncorporation
   });
   return res;
 };
