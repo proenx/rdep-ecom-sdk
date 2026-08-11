@@ -1,16 +1,50 @@
 import axios from 'axios';
 
 let accessToken = null;
+let authRedirectConfig = {
+  enabled: false,
+  loginPath: "/login",
+  onRedirect: null,
+};
+
+const isBrowser = () => typeof window !== "undefined";
+
+const getBareToken = (token) => {
+  if (!token) {
+    return "";
+  }
+  return String(token)
+    .replace(/^Bearer\s+/i, "")
+    .trim();
+};
+
+const decodeJwtPayload = (token) => {
+  const bareToken = getBareToken(token);
+  const tokenParts = bareToken.split(".");
+
+  if (tokenParts.length !== 3) {
+    return null;
+  }
+
+  try {
+    const base64 = tokenParts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const paddedBase64 = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    const decoded = atob(paddedBase64);
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+};
 
 const setToken = (token) => {
   accessToken = token;
-  if (typeof window !== "undefined") {
+  if (isBrowser()) {
     localStorage.setItem("access_token", token);
   }
 };
 
 const getToken = () => {
-  if (!accessToken && typeof window !== "undefined") {
+  if (!accessToken && isBrowser()) {
     accessToken = localStorage.getItem("access_token");
   }
   return accessToken;
@@ -18,20 +52,111 @@ const getToken = () => {
 
 const clearToken = () => {
   accessToken = null;
-  if (typeof window !== "undefined") {
+  if (isBrowser()) {
     localStorage.removeItem("access_token");
   }
 };
 
+const isTokenExpired = (token = getToken()) => {
+  if (!token) {
+    return true;
+  }
+
+  const payload = decodeJwtPayload(token);
+  if (!payload || typeof payload.exp !== "number") {
+    return false;
+  }
+
+  return Date.now() >= payload.exp * 1000;
+};
+
+const configureAuthRedirect = ({
+  enabled = true,
+  loginPath = "/login",
+  onRedirect = null,
+} = {}) => {
+  authRedirectConfig = {
+    enabled: Boolean(enabled),
+    loginPath: loginPath || "/login",
+    onRedirect: typeof onRedirect === "function" ? onRedirect : null,
+  };
+
+  return authRedirectConfig;
+};
+
+const redirectToLogin = (reason = "unauthenticated") => {
+  clearToken();
+
+  if (!isBrowser() || !authRedirectConfig.enabled) {
+    return false;
+  }
+
+  if (authRedirectConfig.onRedirect) {
+    authRedirectConfig.onRedirect({
+      reason,
+      loginPath: authRedirectConfig.loginPath,
+    });
+    return true;
+  }
+
+  if (window.location.pathname !== authRedirectConfig.loginPath) {
+    window.location.assign(authRedirectConfig.loginPath);
+  }
+
+  return true;
+};
+
+const ensureAuthenticatedOnLoad = ({
+  redirectOnMissingToken = false,
+} = {}) => {
+  const token = getToken();
+
+  if (!token) {
+    if (redirectOnMissingToken) {
+      redirectToLogin("missing-token");
+    }
+    return false;
+  }
+
+  if (isTokenExpired(token)) {
+    redirectToLogin("token-expired");
+    return false;
+  }
+
+  return true;
+};
+
 const apiClient = axios.create();
 
-const initClient = (baseURL) => {
+const isGuestAllowedCartRoute = (url = "") => {
+  return String(url).includes("/cart-service/ws/cart/");
+};
+
+const initClient = (baseURL, options = {}) => {
   apiClient.defaults.baseURL = baseURL;
+
+  const shouldEnableAuthRedirect = options?.authRedirect?.enabled !== false;
+  if (shouldEnableAuthRedirect) {
+    configureAuthRedirect({ enabled: true, ...(options?.authRedirect || {}) });
+  }
+
+  if (options?.checkAuthOnLoad !== false) {
+    ensureAuthenticatedOnLoad({
+      redirectOnMissingToken:
+        options?.authRedirect?.redirectOnMissingToken === true,
+    });
+  }
 };
 
 // Attach token automatically
 apiClient.interceptors.request.use((config) => {
   const token = getToken();
+
+  if (token && isTokenExpired(token)) {
+    redirectToLogin("token-expired");
+    return Promise.reject(new Error("Access token expired"));
+  }
+
   if (token) {
     config.headers.Authorization = token.startsWith("Bearer ")
       ? token
@@ -57,6 +182,16 @@ apiClient.interceptors.response.use(
     return res.data;
   },
   (err) => {
+    const status = err?.response?.status;
+    const requestUrl = err?.config?.url || err?.response?.config?.url || "";
+
+    if (
+      (status === 401 || status === 403) &&
+      !isGuestAllowedCartRoute(requestUrl)
+    ) {
+      redirectToLogin("unauthorized");
+    }
+
     console.error("API Error:", err?.response?.data || err.message);
     return Promise.reject(err);
   },
@@ -2017,4 +2152,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, customerLogin, ecomLogin, editCustomerAddress, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, login, logout, placeOrder, recordOrderPayment, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
+export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
