@@ -39,12 +39,16 @@ __export(index_exports, {
   checkTransactionStatus: () => checkTransactionStatus,
   clearToken: () => clearToken,
   clearUserDetails: () => clearUserDetails,
+  configureAuthRedirect: () => configureAuthRedirect,
+  consumeAuthRedirectMessage: () => consumeAuthRedirectMessage,
   customerLogin: () => customerLogin,
   ecomLogin: () => ecomLogin,
   editCustomerAddress: () => editCustomerAddress,
+  ensureAuthenticatedOnLoad: () => ensureAuthenticatedOnLoad,
   generatePaymentLink: () => generatePaymentLink,
   generateSetNewPasswordOtp: () => generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements: () => getActiveRegisterConsentRequirements,
+  getAuthRedirectMessage: () => getAuthRedirectMessage,
   getCategoriesByTenant: () => getCategoriesByTenant,
   getCustomer: () => getCustomer,
   getCustomerAddress: () => getCustomerAddress,
@@ -64,10 +68,12 @@ __export(index_exports, {
   initiateHdfcPayment: () => initiateHdfcPayment,
   initiateRazorPayPayment: () => initiateRazorPayPayment,
   initiateRegisterVerifyAadhaarDigilockerSession: () => initiateRegisterVerifyAadhaarDigilockerSession,
+  isTokenExpired: () => isTokenExpired,
   login: () => login,
   logout: () => logout,
   placeOrder: () => placeOrder,
   recordOrderPayment: () => recordOrderPayment,
+  redirectToLogin: () => redirectToLogin,
   refreshCart: () => refreshCart,
   refreshToken: () => refreshToken,
   register: () => register,
@@ -103,32 +109,158 @@ var import_axios = __toESM(require("axios"), 1);
 
 // src/core/tokenManager.js
 var accessToken = null;
+var AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
+var authRedirectConfig = {
+  enabled: false,
+  loginPath: "/login",
+  onRedirect: null
+};
+var isBrowser = () => typeof window !== "undefined";
+var getBareToken = (token) => {
+  if (!token) {
+    return "";
+  }
+  return String(token).replace(/^Bearer\s+/i, "").trim();
+};
+var decodeJwtPayload = (token) => {
+  const bareToken = getBareToken(token);
+  const tokenParts = bareToken.split(".");
+  if (tokenParts.length !== 3) {
+    return null;
+  }
+  try {
+    const base64 = tokenParts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const paddedBase64 = base64 + "=".repeat((4 - base64.length % 4) % 4);
+    const decoded = atob(paddedBase64);
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+};
+var getRedirectMessageByReason = (reason) => {
+  if (reason === "token-expired" || reason === "unauthorized") {
+    return "token is expired login to continue";
+  }
+  return "";
+};
 var setToken = (token) => {
   accessToken = token;
-  if (typeof window !== "undefined") {
+  if (isBrowser()) {
     localStorage.setItem("access_token", token);
   }
 };
 var getToken = () => {
-  if (!accessToken && typeof window !== "undefined") {
+  if (!accessToken && isBrowser()) {
     accessToken = localStorage.getItem("access_token");
   }
   return accessToken;
 };
 var clearToken = () => {
   accessToken = null;
-  if (typeof window !== "undefined") {
+  if (isBrowser()) {
     localStorage.removeItem("access_token");
   }
+};
+var isTokenExpired = (token = getToken()) => {
+  if (!token) {
+    return true;
+  }
+  const payload = decodeJwtPayload(token);
+  if (!payload || typeof payload.exp !== "number") {
+    return false;
+  }
+  return Date.now() >= payload.exp * 1e3;
+};
+var configureAuthRedirect = ({
+  enabled = true,
+  loginPath = "/login",
+  onRedirect = null
+} = {}) => {
+  authRedirectConfig = {
+    enabled: Boolean(enabled),
+    loginPath: loginPath || "/login",
+    onRedirect: typeof onRedirect === "function" ? onRedirect : null
+  };
+  return authRedirectConfig;
+};
+var getAuthRedirectMessage = () => {
+  if (!isBrowser()) {
+    return "";
+  }
+  return sessionStorage.getItem(AUTH_REDIRECT_MESSAGE_KEY) || "";
+};
+var consumeAuthRedirectMessage = () => {
+  const message = getAuthRedirectMessage();
+  if (isBrowser()) {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+  return message;
+};
+var redirectToLogin = (reason = "unauthenticated") => {
+  clearToken();
+  if (!isBrowser() || !authRedirectConfig.enabled) {
+    return false;
+  }
+  const message = getRedirectMessageByReason(reason);
+  if (message) {
+    sessionStorage.setItem(AUTH_REDIRECT_MESSAGE_KEY, message);
+  } else {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+  if (authRedirectConfig.onRedirect) {
+    authRedirectConfig.onRedirect({
+      reason,
+      loginPath: authRedirectConfig.loginPath,
+      message
+    });
+    return true;
+  }
+  if (window.location.pathname !== authRedirectConfig.loginPath) {
+    window.location.assign(authRedirectConfig.loginPath);
+  }
+  return true;
+};
+var ensureAuthenticatedOnLoad = ({
+  redirectOnMissingToken = false
+} = {}) => {
+  const token = getToken();
+  if (!token) {
+    if (redirectOnMissingToken) {
+      redirectToLogin("missing-token");
+    }
+    return false;
+  }
+  if (isTokenExpired(token)) {
+    redirectToLogin("token-expired");
+    return false;
+  }
+  return true;
 };
 
 // src/core/apiClient.js
 var apiClient = import_axios.default.create();
-var initClient = (baseURL) => {
+var isGuestAllowedCartRoute = (url = "") => {
+  return String(url).includes("/cart-service/ws/cart/");
+};
+var initClient = (baseURL, options = {}) => {
+  var _a, _b;
   apiClient.defaults.baseURL = baseURL;
+  const shouldEnableAuthRedirect = ((_a = options == null ? void 0 : options.authRedirect) == null ? void 0 : _a.enabled) !== false;
+  if (shouldEnableAuthRedirect) {
+    configureAuthRedirect({ enabled: true, ...(options == null ? void 0 : options.authRedirect) || {} });
+  }
+  if ((options == null ? void 0 : options.checkAuthOnLoad) !== false) {
+    ensureAuthenticatedOnLoad({
+      redirectOnMissingToken: ((_b = options == null ? void 0 : options.authRedirect) == null ? void 0 : _b.redirectOnMissingToken) === true
+    });
+  }
 };
 apiClient.interceptors.request.use((config) => {
   const token = getToken();
+  if (token && isTokenExpired(token)) {
+    redirectToLogin("token-expired");
+    return Promise.reject(new Error("Access token expired"));
+  }
   if (token) {
     config.headers.Authorization = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
   }
@@ -142,8 +274,13 @@ apiClient.interceptors.response.use(
     return res.data;
   },
   (err) => {
-    var _a;
-    console.error("API Error:", ((_a = err == null ? void 0 : err.response) == null ? void 0 : _a.data) || err.message);
+    var _a, _b, _c, _d, _e;
+    const status = (_a = err == null ? void 0 : err.response) == null ? void 0 : _a.status;
+    const requestUrl = ((_b = err == null ? void 0 : err.config) == null ? void 0 : _b.url) || ((_d = (_c = err == null ? void 0 : err.response) == null ? void 0 : _c.config) == null ? void 0 : _d.url) || "";
+    if ((status === 401 || status === 403) && !isGuestAllowedCartRoute(requestUrl)) {
+      redirectToLogin("unauthorized");
+    }
+    console.error("API Error:", ((_e = err == null ? void 0 : err.response) == null ? void 0 : _e.data) || err.message);
     return Promise.reject(err);
   }
 );
@@ -1585,12 +1722,16 @@ var getProductDetailById = async ({
   checkTransactionStatus,
   clearToken,
   clearUserDetails,
+  configureAuthRedirect,
+  consumeAuthRedirectMessage,
   customerLogin,
   ecomLogin,
   editCustomerAddress,
+  ensureAuthenticatedOnLoad,
   generatePaymentLink,
   generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements,
+  getAuthRedirectMessage,
   getCategoriesByTenant,
   getCustomer,
   getCustomerAddress,
@@ -1610,10 +1751,12 @@ var getProductDetailById = async ({
   initiateHdfcPayment,
   initiateRazorPayPayment,
   initiateRegisterVerifyAadhaarDigilockerSession,
+  isTokenExpired,
   login,
   logout,
   placeOrder,
   recordOrderPayment,
+  redirectToLogin,
   refreshCart,
   refreshToken,
   register,
