@@ -55,6 +55,7 @@ __export(index_exports, {
   getCustomerBeneficiaries: () => getCustomerBeneficiaries,
   getFiltersByTenantAndStore: () => getFiltersByTenantAndStore,
   getOrderById: () => getOrderById,
+  getOrderDeliveryStatusByBillId: () => getOrderDeliveryStatusByBillId,
   getOrderList: () => getOrderList,
   getProductDetailById: () => getProductDetailById,
   getProductsByTenantAndStore: () => getProductsByTenantAndStore,
@@ -139,7 +140,7 @@ var decodeJwtPayload = (token) => {
 };
 var getRedirectMessageByReason = (reason) => {
   if (reason === "token-expired" || reason === "unauthorized") {
-    return "token is expired login to continue";
+    return "Token is expired login to continue.";
   }
   return "";
 };
@@ -1513,6 +1514,29 @@ var getOrderById = async (orderId) => {
     throw error;
   }
 };
+var getOrderDeliveryStatusByBillId = async (billId) => {
+  var _a;
+  try {
+    if (billId === void 0 || billId === null || String(billId).trim() === "") {
+      throw new Error("getOrderDeliveryStatusByBillId requires a billId");
+    }
+    const encodedBillId = encodeURIComponent(String(billId));
+    const endpoint = `/order-service/cws/order/delivery/status/${encodedBillId}`;
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order Delivery Status API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 
 // src/services/productService.js
 var resolveTenantId = async (tenantId) => {
@@ -1738,6 +1762,7 @@ var getProductDetailById = async ({
   getCustomerBeneficiaries,
   getFiltersByTenantAndStore,
   getOrderById,
+  getOrderDeliveryStatusByBillId,
   getOrderList,
   getProductDetailById,
   getProductsByTenantAndStore,

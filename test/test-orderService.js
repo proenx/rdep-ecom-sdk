@@ -10,6 +10,7 @@ import {
   verifyRazorpayStatus,
   getOrderList,
   getOrderById,
+  getOrderDeliveryStatusByBillId,
   setToken,
   getToken,
   ecomLogin,
@@ -121,6 +122,25 @@ const run = async () => {
 
     if (!orderByIdResponse) {
       throw new Error("getOrderById failed: empty response");
+    }
+
+    const resolvedBillId =
+      placeOrderResponse?.billId ||
+      orderByIdResponse?.billId ||
+      orderByIdResponse?.orderDetails?.billId ||
+      process.env.RDEP_BILL_ID;
+
+    if (resolvedBillId) {
+      const deliveryStatusResponse =
+        await getOrderDeliveryStatusByBillId(resolvedBillId);
+      console.log(
+        "ORDER DELIVERY STATUS RESPONSE:",
+        JSON.stringify(deliveryStatusResponse, null, 2),
+      );
+    } else {
+      console.log(
+        "ORDER DELIVERY STATUS SKIPPED: billId missing in order responses. Set RDEP_BILL_ID to test delivery status API.",
+      );
     }
 
     const paymentRequest = {
