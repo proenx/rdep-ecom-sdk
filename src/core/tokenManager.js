@@ -1,4 +1,5 @@
 let accessToken = null;
+const AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
 let authRedirectConfig = {
   enabled: false,
   loginPath: "/login",
@@ -32,6 +33,14 @@ const decodeJwtPayload = (token) => {
   } catch {
     return null;
   }
+};
+
+const getRedirectMessageByReason = (reason) => {
+  if (reason === "token-expired" || reason === "unauthorized") {
+    return "Token is expired login to continue.";
+  }
+
+  return "";
 };
 
 export const setToken = (token) => {
@@ -82,6 +91,24 @@ export const configureAuthRedirect = ({
   return authRedirectConfig;
 };
 
+export const getAuthRedirectMessage = () => {
+  if (!isBrowser()) {
+    return "";
+  }
+
+  return sessionStorage.getItem(AUTH_REDIRECT_MESSAGE_KEY) || "";
+};
+
+export const consumeAuthRedirectMessage = () => {
+  const message = getAuthRedirectMessage();
+
+  if (isBrowser()) {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+
+  return message;
+};
+
 export const redirectToLogin = (reason = "unauthenticated") => {
   clearToken();
 
@@ -89,10 +116,18 @@ export const redirectToLogin = (reason = "unauthenticated") => {
     return false;
   }
 
+  const message = getRedirectMessageByReason(reason);
+  if (message) {
+    sessionStorage.setItem(AUTH_REDIRECT_MESSAGE_KEY, message);
+  } else {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+
   if (authRedirectConfig.onRedirect) {
     authRedirectConfig.onRedirect({
       reason,
       loginPath: authRedirectConfig.loginPath,
+      message,
     });
     return true;
   }

@@ -40,6 +40,7 @@ __export(index_exports, {
   clearToken: () => clearToken,
   clearUserDetails: () => clearUserDetails,
   configureAuthRedirect: () => configureAuthRedirect,
+  consumeAuthRedirectMessage: () => consumeAuthRedirectMessage,
   customerLogin: () => customerLogin,
   ecomLogin: () => ecomLogin,
   editCustomerAddress: () => editCustomerAddress,
@@ -47,6 +48,7 @@ __export(index_exports, {
   generatePaymentLink: () => generatePaymentLink,
   generateSetNewPasswordOtp: () => generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements: () => getActiveRegisterConsentRequirements,
+  getAuthRedirectMessage: () => getAuthRedirectMessage,
   getCategoriesByTenant: () => getCategoriesByTenant,
   getCustomer: () => getCustomer,
   getCustomerAddress: () => getCustomerAddress,
@@ -107,6 +109,7 @@ var import_axios = __toESM(require("axios"), 1);
 
 // src/core/tokenManager.js
 var accessToken = null;
+var AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
 var authRedirectConfig = {
   enabled: false,
   loginPath: "/login",
@@ -133,6 +136,12 @@ var decodeJwtPayload = (token) => {
   } catch {
     return null;
   }
+};
+var getRedirectMessageByReason = (reason) => {
+  if (reason === "token-expired" || reason === "unauthorized") {
+    return "token is expired login to continue";
+  }
+  return "";
 };
 var setToken = (token) => {
   accessToken = token;
@@ -174,15 +183,35 @@ var configureAuthRedirect = ({
   };
   return authRedirectConfig;
 };
+var getAuthRedirectMessage = () => {
+  if (!isBrowser()) {
+    return "";
+  }
+  return sessionStorage.getItem(AUTH_REDIRECT_MESSAGE_KEY) || "";
+};
+var consumeAuthRedirectMessage = () => {
+  const message = getAuthRedirectMessage();
+  if (isBrowser()) {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+  return message;
+};
 var redirectToLogin = (reason = "unauthenticated") => {
   clearToken();
   if (!isBrowser() || !authRedirectConfig.enabled) {
     return false;
   }
+  const message = getRedirectMessageByReason(reason);
+  if (message) {
+    sessionStorage.setItem(AUTH_REDIRECT_MESSAGE_KEY, message);
+  } else {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
   if (authRedirectConfig.onRedirect) {
     authRedirectConfig.onRedirect({
       reason,
-      loginPath: authRedirectConfig.loginPath
+      loginPath: authRedirectConfig.loginPath,
+      message
     });
     return true;
   }
@@ -1694,6 +1723,7 @@ var getProductDetailById = async ({
   clearToken,
   clearUserDetails,
   configureAuthRedirect,
+  consumeAuthRedirectMessage,
   customerLogin,
   ecomLogin,
   editCustomerAddress,
@@ -1701,6 +1731,7 @@ var getProductDetailById = async ({
   generatePaymentLink,
   generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements,
+  getAuthRedirectMessage,
   getCategoriesByTenant,
   getCustomer,
   getCustomerAddress,
