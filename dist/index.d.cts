@@ -39,7 +39,7 @@ const decodeJwtPayload = (token) => {
 
 const getRedirectMessageByReason = (reason) => {
   if (reason === "token-expired" || reason === "unauthorized") {
-    return "token is expired login to continue";
+    return "Token is expired login to continue.";
   }
 
   return "";
@@ -1908,6 +1908,42 @@ const getOrderById = async (orderId) => {
   }
 };
 
+/**
+ * Fetch order delivery status by billId
+ */
+const getOrderDeliveryStatusByBillId = async (billId) => {
+  try {
+    if (
+      billId === undefined ||
+      billId === null ||
+      String(billId).trim() === ""
+    ) {
+      throw new Error("getOrderDeliveryStatusByBillId requires a billId");
+    }
+
+    const encodedBillId = encodeURIComponent(String(billId));
+    const endpoint = `/order-service/cws/order/delivery/status/${encodedBillId}`;
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order Delivery Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
 const resolveTenantId = async (tenantId) => {
   if (tenantId !== undefined && tenantId !== null && tenantId !== "") {
     return String(tenantId);
@@ -2187,4 +2223,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
+export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
