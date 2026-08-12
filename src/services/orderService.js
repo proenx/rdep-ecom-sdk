@@ -420,3 +420,39 @@ export const getOrderById = async (orderId) => {
     throw error;
   }
 };
+
+/**
+ * Fetch order delivery status by billId
+ */
+export const getOrderDeliveryStatusByBillId = async (billId) => {
+  try {
+    if (
+      billId === undefined ||
+      billId === null ||
+      String(billId).trim() === ""
+    ) {
+      throw new Error("getOrderDeliveryStatusByBillId requires a billId");
+    }
+
+    const encodedBillId = encodeURIComponent(String(billId));
+    const endpoint = `/order-service/cws/order/delivery/status/${encodedBillId}`;
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order Delivery Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
