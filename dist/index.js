@@ -33,7 +33,7 @@ var decodeJwtPayload = (token) => {
 };
 var getRedirectMessageByReason = (reason) => {
   if (reason === "token-expired" || reason === "unauthorized") {
-    return "Token is expired login to continue.";
+    return "Your session has expired. Please log in again.";
   }
   return "";
 };
