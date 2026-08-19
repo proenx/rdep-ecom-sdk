@@ -1234,9 +1234,13 @@ var placeOrder = async (orderRequest = {}) => {
     if (!orderRequest || typeof orderRequest !== "object") {
       throw new Error("placeOrder requires a valid order request object");
     }
+    const requestPayload = { ...orderRequest };
+    if (requestPayload.customerGSTNumber === void 0 && requestPayload.customerGstNumber !== void 0) {
+      requestPayload.customerGSTNumber = requestPayload.customerGstNumber;
+    }
     const res = await apiClient_default.post(
       "/order-service/ws/ecom/order/place",
-      orderRequest
+      requestPayload
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = extractTokenFromResponse2(res);
