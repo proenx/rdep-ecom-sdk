@@ -23,9 +23,17 @@ export const placeOrder = async (orderRequest = {}) => {
       throw new Error("placeOrder requires a valid order request object");
     }
 
+    const requestPayload = { ...orderRequest };
+    if (
+      requestPayload.customerGSTNumber === undefined &&
+      requestPayload.customerGstNumber !== undefined
+    ) {
+      requestPayload.customerGSTNumber = requestPayload.customerGstNumber;
+    }
+
     const res = await apiClient.post(
       "/order-service/ws/ecom/order/place",
-      orderRequest,
+      requestPayload,
     );
 
     // apiClient returns only res.data for non-auth APIs.

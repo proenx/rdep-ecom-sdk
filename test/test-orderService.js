@@ -50,6 +50,7 @@ const run = async () => {
     const placeOrderRequest = {
       cart_id: 98765,
       customerId: 1001,
+      customerGSTNumber: "29ABCDE1234F1Z5",
       customerMobileNo: "9876543210",
       customerEmail: "customer@example.com",
       grossTotal: 550.0,
