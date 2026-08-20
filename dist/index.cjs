@@ -104,7 +104,8 @@ __export(index_exports, {
   validateRegisterVerifyEmailOtp: () => validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp: () => validateRegisterVerifyMobileOtp,
   verifyHdfcStatus: () => verifyHdfcStatus,
-  verifyRazorpayStatus: () => verifyRazorpayStatus
+  verifyRazorpayStatus: () => verifyRazorpayStatus,
+  verifyStatus: () => verifyStatus
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -1524,6 +1525,30 @@ var verifyHdfcStatus = async (uid) => {
     throw error;
   }
 };
+var verifyStatus = async (uid) => {
+  var _a;
+  try {
+    if (!uid || String(uid).trim() === "") {
+      throw new Error("verifyStatus requires a uid");
+    }
+    const encodedUid = encodeURIComponent(String(uid));
+    const res = await apiClient_default.get(
+      `/order-service/ws/ecom/order/verifyStatus/${encodedUid}`
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify Status API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
 var verifyRazorpayStatus = async ({
   orderId,
   razorpayPaymentId,
@@ -1908,5 +1933,6 @@ var getProductDetailById = async ({
   validateRegisterVerifyEmailOtp,
   validateRegisterVerifyMobileOtp,
   verifyHdfcStatus,
-  verifyRazorpayStatus
+  verifyRazorpayStatus,
+  verifyStatus
 });

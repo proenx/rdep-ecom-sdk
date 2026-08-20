@@ -374,6 +374,39 @@ export const verifyHdfcStatus = async (uid) => {
 };
 
 /**
+ * Verify payment status
+ */
+export const verifyStatus = async (uid) => {
+  try {
+    if (!uid || String(uid).trim() === "") {
+      throw new Error("verifyStatus requires a uid");
+    }
+
+    const encodedUid = encodeURIComponent(String(uid));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/verifyStatus/${encodedUid}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
  * Verify Razorpay payment status
  */
 export const verifyRazorpayStatus = async ({
