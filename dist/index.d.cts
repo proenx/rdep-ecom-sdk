@@ -528,6 +528,37 @@ const generateSetNewPasswordOtp = async ({
 };
 
 /**
+ * Generate OTP for ecom set new password flow
+ */
+const generateEcomSetNewPasswordOtp = async ({
+  emailId,
+  mobileNumber,
+  distributorCode,
+  domainName,
+}) => {
+  const res = await apiClient.post(
+    "/auth-service/ecom/password/setNewPassword/generateOtp",
+    {
+      emailId,
+      mobileNumber,
+      distributorCode,
+      domainName,
+    },
+  );
+
+  const transactionId =
+    res?.transactionId ||
+    res?.data?.transactionId ||
+    res?.response?.transactionId;
+
+  if (transactionId) {
+    currentSetNewPasswordTransactionId = String(transactionId);
+  }
+
+  return res?.data || res;
+};
+
+/**
  * Set new password after OTP validation
  */
 const setNewPassword = async ({
@@ -558,6 +589,40 @@ const setNewPassword = async ({
       tenantSubDomain,
     },
   );
+
+  return res?.data || res;
+};
+
+/**
+ * Set new password for ecom flow after OTP validation
+ */
+const setEcomNewPassword = async ({
+  emailId,
+  mobileNumber,
+  distributorCode,
+  transactionId,
+  otp,
+  newPassword,
+  domainName,
+}) => {
+  const resolvedTransactionId =
+    transactionId || currentSetNewPasswordTransactionId || null;
+
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call generateEcomSetNewPasswordOtp first or pass transactionId explicitly.",
+    );
+  }
+
+  const res = await apiClient.post("/auth-service/ecom/password/setNewPassword", {
+    emailId,
+    mobileNumber,
+    distributorCode,
+    transactionId: resolvedTransactionId,
+    otp,
+    newPassword,
+    domainName,
+  });
 
   return res?.data || res;
 };
@@ -1501,6 +1566,28 @@ const extractTokenFromResponse = (res) => {
   );
 };
 
+const normalizeAddressContactPerson = (address = {}, fallback = {}) => {
+  if (!address || typeof address !== "object") {
+    return address;
+  }
+
+  const normalizedAddress = { ...address };
+  if (
+    normalizedAddress.contactPerson === undefined ||
+    normalizedAddress.contactPerson === null ||
+    String(normalizedAddress.contactPerson).trim() === ""
+  ) {
+    normalizedAddress.contactPerson =
+      address.contactName ||
+      address.name ||
+      fallback.contactPerson ||
+      fallback.customerName ||
+      "";
+  }
+
+  return normalizedAddress;
+};
+
 /**
  * Place order
  */
@@ -1510,9 +1597,26 @@ const placeOrder = async (orderRequest = {}) => {
       throw new Error("placeOrder requires a valid order request object");
     }
 
+    const requestPayload = { ...orderRequest };
+    if (
+      requestPayload.customerGSTNumber === undefined &&
+      requestPayload.customerGstNumber !== undefined
+    ) {
+      requestPayload.customerGSTNumber = requestPayload.customerGstNumber;
+    }
+
+    requestPayload.shippingAddress = normalizeAddressContactPerson(
+      requestPayload.shippingAddress,
+      requestPayload,
+    );
+    requestPayload.billingAddress = normalizeAddressContactPerson(
+      requestPayload.billingAddress,
+      requestPayload,
+    );
+
     const res = await apiClient.post(
       "/order-service/ws/ecom/order/place",
-      orderRequest,
+      requestPayload,
     );
 
     // apiClient returns only res.data for non-auth APIs.
@@ -1748,6 +1852,39 @@ const initiateHdfcPayment = async (orderId) => {
   } catch (error) {
     console.error(
       "Initiate HDFC Payment API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Initiate Freecharge payment
+ */
+const initiateFreechargePayment = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("initiateFreechargePayment requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/initiateFreechargePayment/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Freecharge Payment API Error:",
       error?.response?.data || error.message,
     );
 
@@ -2223,4 +2360,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
+export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generateEcomSetNewPasswordOtp, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateFreechargePayment, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setEcomNewPassword, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };

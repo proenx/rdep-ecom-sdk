@@ -14,6 +14,28 @@ const extractTokenFromResponse = (res) => {
   );
 };
 
+const normalizeAddressContactPerson = (address = {}, fallback = {}) => {
+  if (!address || typeof address !== "object") {
+    return address;
+  }
+
+  const normalizedAddress = { ...address };
+  if (
+    normalizedAddress.contactPerson === undefined ||
+    normalizedAddress.contactPerson === null ||
+    String(normalizedAddress.contactPerson).trim() === ""
+  ) {
+    normalizedAddress.contactPerson =
+      address.contactName ||
+      address.name ||
+      fallback.contactPerson ||
+      fallback.customerName ||
+      "";
+  }
+
+  return normalizedAddress;
+};
+
 /**
  * Place order
  */
@@ -23,9 +45,26 @@ export const placeOrder = async (orderRequest = {}) => {
       throw new Error("placeOrder requires a valid order request object");
     }
 
+    const requestPayload = { ...orderRequest };
+    if (
+      requestPayload.customerGSTNumber === undefined &&
+      requestPayload.customerGstNumber !== undefined
+    ) {
+      requestPayload.customerGSTNumber = requestPayload.customerGstNumber;
+    }
+
+    requestPayload.shippingAddress = normalizeAddressContactPerson(
+      requestPayload.shippingAddress,
+      requestPayload,
+    );
+    requestPayload.billingAddress = normalizeAddressContactPerson(
+      requestPayload.billingAddress,
+      requestPayload,
+    );
+
     const res = await apiClient.post(
       "/order-service/ws/ecom/order/place",
-      orderRequest,
+      requestPayload,
     );
 
     // apiClient returns only res.data for non-auth APIs.
@@ -261,6 +300,39 @@ export const initiateHdfcPayment = async (orderId) => {
   } catch (error) {
     console.error(
       "Initiate HDFC Payment API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Initiate Freecharge payment
+ */
+export const initiateFreechargePayment = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("initiateFreechargePayment requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/initiateFreechargePayment/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Freecharge Payment API Error:",
       error?.response?.data || error.message,
     );
 

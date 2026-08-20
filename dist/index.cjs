@@ -45,6 +45,7 @@ __export(index_exports, {
   ecomLogin: () => ecomLogin,
   editCustomerAddress: () => editCustomerAddress,
   ensureAuthenticatedOnLoad: () => ensureAuthenticatedOnLoad,
+  generateEcomSetNewPasswordOtp: () => generateEcomSetNewPasswordOtp,
   generatePaymentLink: () => generatePaymentLink,
   generateSetNewPasswordOtp: () => generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements: () => getActiveRegisterConsentRequirements,
@@ -66,6 +67,7 @@ __export(index_exports, {
   getToken: () => getToken,
   getUserDetails: () => getUserDetails,
   initClient: () => initClient,
+  initiateFreechargePayment: () => initiateFreechargePayment,
   initiateHdfcPayment: () => initiateHdfcPayment,
   initiateRazorPayPayment: () => initiateRazorPayPayment,
   initiateRegisterVerifyAadhaarDigilockerSession: () => initiateRegisterVerifyAadhaarDigilockerSession,
@@ -87,6 +89,7 @@ __export(index_exports, {
   sendRegisterVerifyAadhaarOtp: () => sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp: () => sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp: () => sendRegisterVerifyMobileOtp,
+  setEcomNewPassword: () => setEcomNewPassword,
   setNewPassword: () => setNewPassword,
   setTenantId: () => setTenantId,
   setToken: () => setToken,
@@ -505,6 +508,28 @@ var generateSetNewPasswordOtp = async ({
   }
   return (res == null ? void 0 : res.data) || res;
 };
+var generateEcomSetNewPasswordOtp = async ({
+  emailId,
+  mobileNumber,
+  distributorCode,
+  domainName
+}) => {
+  var _a, _b;
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/password/setNewPassword/generateOtp",
+    {
+      emailId,
+      mobileNumber,
+      distributorCode,
+      domainName
+    }
+  );
+  const transactionId = (res == null ? void 0 : res.transactionId) || ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.transactionId) || ((_b = res == null ? void 0 : res.response) == null ? void 0 : _b.transactionId);
+  if (transactionId) {
+    currentSetNewPasswordTransactionId = String(transactionId);
+  }
+  return (res == null ? void 0 : res.data) || res;
+};
 var setNewPassword = async ({
   username,
   transactionId,
@@ -530,6 +555,32 @@ var setNewPassword = async ({
       tenantSubDomain
     }
   );
+  return (res == null ? void 0 : res.data) || res;
+};
+var setEcomNewPassword = async ({
+  emailId,
+  mobileNumber,
+  distributorCode,
+  transactionId,
+  otp,
+  newPassword,
+  domainName
+}) => {
+  const resolvedTransactionId = transactionId || currentSetNewPasswordTransactionId || null;
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call generateEcomSetNewPasswordOtp first or pass transactionId explicitly."
+    );
+  }
+  const res = await apiClient_default.post("/auth-service/ecom/password/setNewPassword", {
+    emailId,
+    mobileNumber,
+    distributorCode,
+    transactionId: resolvedTransactionId,
+    otp,
+    newPassword,
+    domainName
+  });
   return (res == null ? void 0 : res.data) || res;
 };
 var sendRegisterVerifyMobileOtp = async ({
@@ -1228,15 +1279,37 @@ var extractTokenFromResponse2 = (res) => {
   const headers = (res == null ? void 0 : res.headers) || {};
   return headers.authorization || headers.Authorization || headers["x-auth-token"] || headers["X-Auth-Token"] || headers["x-access-token"] || headers["X-Access-Token"] || null;
 };
+var normalizeAddressContactPerson = (address = {}, fallback = {}) => {
+  if (!address || typeof address !== "object") {
+    return address;
+  }
+  const normalizedAddress = { ...address };
+  if (normalizedAddress.contactPerson === void 0 || normalizedAddress.contactPerson === null || String(normalizedAddress.contactPerson).trim() === "") {
+    normalizedAddress.contactPerson = address.contactName || address.name || fallback.contactPerson || fallback.customerName || "";
+  }
+  return normalizedAddress;
+};
 var placeOrder = async (orderRequest = {}) => {
   var _a;
   try {
     if (!orderRequest || typeof orderRequest !== "object") {
       throw new Error("placeOrder requires a valid order request object");
     }
+    const requestPayload = { ...orderRequest };
+    if (requestPayload.customerGSTNumber === void 0 && requestPayload.customerGstNumber !== void 0) {
+      requestPayload.customerGSTNumber = requestPayload.customerGstNumber;
+    }
+    requestPayload.shippingAddress = normalizeAddressContactPerson(
+      requestPayload.shippingAddress,
+      requestPayload
+    );
+    requestPayload.billingAddress = normalizeAddressContactPerson(
+      requestPayload.billingAddress,
+      requestPayload
+    );
     const res = await apiClient_default.post(
       "/order-service/ws/ecom/order/place",
-      orderRequest
+      requestPayload
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = extractTokenFromResponse2(res);
@@ -1398,6 +1471,30 @@ var initiateHdfcPayment = async (orderId) => {
   } catch (error) {
     console.error(
       "Initiate HDFC Payment API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var initiateFreechargePayment = async (orderId) => {
+  var _a;
+  try {
+    if (!orderId) {
+      throw new Error("initiateFreechargePayment requires an orderId");
+    }
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient_default.get(
+      `/order-service/ws/ecom/order/initiateFreechargePayment/${encodedOrderId}`
+    );
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Freecharge Payment API Error:",
       ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
     );
     throw error;
@@ -1752,6 +1849,7 @@ var getProductDetailById = async ({
   ecomLogin,
   editCustomerAddress,
   ensureAuthenticatedOnLoad,
+  generateEcomSetNewPasswordOtp,
   generatePaymentLink,
   generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements,
@@ -1773,6 +1871,7 @@ var getProductDetailById = async ({
   getToken,
   getUserDetails,
   initClient,
+  initiateFreechargePayment,
   initiateHdfcPayment,
   initiateRazorPayPayment,
   initiateRegisterVerifyAadhaarDigilockerSession,
@@ -1794,6 +1893,7 @@ var getProductDetailById = async ({
   sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp,
+  setEcomNewPassword,
   setNewPassword,
   setTenantId,
   setToken,
