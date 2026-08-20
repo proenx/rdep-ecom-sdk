@@ -6,6 +6,7 @@ import {
   generatePaymentLink,
   initiateRazorPayPayment,
   initiateHdfcPayment,
+  initiateFreechargePayment,
   verifyHdfcStatus,
   verifyRazorpayStatus,
   getOrderList,
@@ -199,6 +200,14 @@ const run = async () => {
     console.log(
       "INITIATE HDFC PAYMENT RESPONSE:",
       JSON.stringify(hdfcPaymentInitResponse, null, 2),
+    );
+
+    const freechargePaymentInitResponse = await initiateFreechargePayment(
+      placeOrderResponse.orderId || paymentRequest.orderId,
+    );
+    console.log(
+      "INITIATE FREECHARGE PAYMENT RESPONSE:",
+      JSON.stringify(freechargePaymentInitResponse, null, 2),
     );
 
     const resolvedHdfcUid =
