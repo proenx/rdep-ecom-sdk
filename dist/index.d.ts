@@ -1566,6 +1566,28 @@ const extractTokenFromResponse = (res) => {
   );
 };
 
+const normalizeAddressContactPerson = (address = {}, fallback = {}) => {
+  if (!address || typeof address !== "object") {
+    return address;
+  }
+
+  const normalizedAddress = { ...address };
+  if (
+    normalizedAddress.contactPerson === undefined ||
+    normalizedAddress.contactPerson === null ||
+    String(normalizedAddress.contactPerson).trim() === ""
+  ) {
+    normalizedAddress.contactPerson =
+      address.contactName ||
+      address.name ||
+      fallback.contactPerson ||
+      fallback.customerName ||
+      "";
+  }
+
+  return normalizedAddress;
+};
+
 /**
  * Place order
  */
@@ -1582,6 +1604,15 @@ const placeOrder = async (orderRequest = {}) => {
     ) {
       requestPayload.customerGSTNumber = requestPayload.customerGstNumber;
     }
+
+    requestPayload.shippingAddress = normalizeAddressContactPerson(
+      requestPayload.shippingAddress,
+      requestPayload,
+    );
+    requestPayload.billingAddress = normalizeAddressContactPerson(
+      requestPayload.billingAddress,
+      requestPayload,
+    );
 
     const res = await apiClient.post(
       "/order-service/ws/ecom/order/place",
@@ -1821,6 +1852,39 @@ const initiateHdfcPayment = async (orderId) => {
   } catch (error) {
     console.error(
       "Initiate HDFC Payment API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Initiate Freecharge payment
+ */
+const initiateFreechargePayment = async (orderId) => {
+  try {
+    if (!orderId) {
+      throw new Error("initiateFreechargePayment requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/initiateFreechargePayment/${encodedOrderId}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Initiate Freecharge Payment API Error:",
       error?.response?.data || error.message,
     );
 
@@ -2296,4 +2360,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generateEcomSetNewPasswordOtp, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setEcomNewPassword, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
+export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generateEcomSetNewPasswordOtp, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateFreechargePayment, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setEcomNewPassword, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus };
