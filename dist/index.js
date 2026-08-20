@@ -398,6 +398,28 @@ var generateSetNewPasswordOtp = async ({
   }
   return (res == null ? void 0 : res.data) || res;
 };
+var generateEcomSetNewPasswordOtp = async ({
+  emailId,
+  mobileNumber,
+  distributorCode,
+  domainName
+}) => {
+  var _a, _b;
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/password/setNewPassword/generateOtp",
+    {
+      emailId,
+      mobileNumber,
+      distributorCode,
+      domainName
+    }
+  );
+  const transactionId = (res == null ? void 0 : res.transactionId) || ((_a = res == null ? void 0 : res.data) == null ? void 0 : _a.transactionId) || ((_b = res == null ? void 0 : res.response) == null ? void 0 : _b.transactionId);
+  if (transactionId) {
+    currentSetNewPasswordTransactionId = String(transactionId);
+  }
+  return (res == null ? void 0 : res.data) || res;
+};
 var setNewPassword = async ({
   username,
   transactionId,
@@ -423,6 +445,32 @@ var setNewPassword = async ({
       tenantSubDomain
     }
   );
+  return (res == null ? void 0 : res.data) || res;
+};
+var setEcomNewPassword = async ({
+  emailId,
+  mobileNumber,
+  distributorCode,
+  transactionId,
+  otp,
+  newPassword,
+  domainName
+}) => {
+  const resolvedTransactionId = transactionId || currentSetNewPasswordTransactionId || null;
+  if (!resolvedTransactionId) {
+    throw new Error(
+      "transactionId is required. Call generateEcomSetNewPasswordOtp first or pass transactionId explicitly."
+    );
+  }
+  const res = await apiClient_default.post("/auth-service/ecom/password/setNewPassword", {
+    emailId,
+    mobileNumber,
+    distributorCode,
+    transactionId: resolvedTransactionId,
+    otp,
+    newPassword,
+    domainName
+  });
   return (res == null ? void 0 : res.data) || res;
 };
 var sendRegisterVerifyMobileOtp = async ({
@@ -1648,6 +1696,7 @@ export {
   ecomLogin,
   editCustomerAddress,
   ensureAuthenticatedOnLoad,
+  generateEcomSetNewPasswordOtp,
   generatePaymentLink,
   generateSetNewPasswordOtp,
   getActiveRegisterConsentRequirements,
@@ -1690,6 +1739,7 @@ export {
   sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp,
   sendRegisterVerifyMobileOtp,
+  setEcomNewPassword,
   setNewPassword,
   setTenantId,
   setToken,

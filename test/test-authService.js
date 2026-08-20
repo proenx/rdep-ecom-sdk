@@ -24,6 +24,8 @@ import {
   getRegisterTransactionId,
   generateSetNewPasswordOtp,
   setNewPassword,
+  generateEcomSetNewPasswordOtp,
+  setEcomNewPassword,
   getSetNewPasswordTransactionId,
   setTenantId,
   getTenantId,
@@ -320,6 +322,27 @@ const run = async () => {
       domainName: "ecom-retail.qa.rdep.io",
     }),
   );
+
+  // await safeCall("generateEcomSetNewPasswordOtp", () =>
+  //   generateEcomSetNewPasswordOtp({
+  //     emailId: "",
+  //     mobileNumber: "",
+  //     distributorCode: "BA001757",
+  //     domainName: tenantDomain,
+  //   }),
+  // );
+
+  // await safeCall("setEcomNewPassword", () =>
+  //   setEcomNewPassword({
+  //     emailId: "",
+  //     mobileNumber: "",
+  //     distributorCode: "BA001757",
+  //     transactionId: getSetNewPasswordTransactionId(),
+  //     otp: "9142",
+  //     newPassword: "123456",
+  //     domainName: tenantDomain,
+  //   }),
+  // );
 
   const setPasswordUsername = process.env.RDEP_RESET_USERNAME || "TENANT";
   const setPasswordTenantSubDomain =
