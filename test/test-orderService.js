@@ -8,6 +8,7 @@ import {
   initiateHdfcPayment,
   initiateFreechargePayment,
   verifyHdfcStatus,
+  verifyStatus,
   verifyRazorpayStatus,
   getOrderList,
   getOrderById,
@@ -226,6 +227,25 @@ const run = async () => {
     } else {
       console.log(
         "VERIFY HDFC STATUS SKIPPED: uid missing in initiate response. Set RDEP_HDFC_UID to test verify API.",
+      );
+    }
+
+    const resolvedVerifyStatusUid =
+      freechargePaymentInitResponse?.uid ||
+      freechargePaymentInitResponse?.data?.uid ||
+      hdfcPaymentInitResponse?.uid ||
+      hdfcPaymentInitResponse?.data?.uid ||
+      process.env.RDEP_VERIFY_UID;
+
+    if (resolvedVerifyStatusUid) {
+      const verifyStatusResponse = await verifyStatus(resolvedVerifyStatusUid);
+      console.log(
+        "VERIFY STATUS RESPONSE:",
+        JSON.stringify(verifyStatusResponse, null, 2),
+      );
+    } else {
+      console.log(
+        "VERIFY STATUS SKIPPED: uid missing in payment initiation responses. Set RDEP_VERIFY_UID to test verify API.",
       );
     }
 

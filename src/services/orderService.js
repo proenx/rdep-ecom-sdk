@@ -277,15 +277,20 @@ export const initiateRazorPayPayment = async (orderId) => {
 /**
  * Initiate HDFC payment
  */
-export const initiateHdfcPayment = async (orderId) => {
+export const initiateHdfcPayment = async (
+  orderId,
+  paymentInstance = "hdfc-1",
+) => {
   try {
     if (!orderId) {
       throw new Error("initiateHdfcPayment requires an orderId");
     }
 
     const encodedOrderId = encodeURIComponent(String(orderId));
+    const selectedPaymentInstance = String(paymentInstance || "hdfc-1").trim();
     const res = await apiClient.get(
       `/order-service/ws/ecom/order/initiateHdfcPayment/${encodedOrderId}`,
+      { params: { paymentInstance: selectedPaymentInstance } },
     );
 
     // apiClient returns only res.data for non-auth APIs.
@@ -366,6 +371,39 @@ export const verifyHdfcStatus = async (uid) => {
   } catch (error) {
     console.error(
       "Verify HDFC Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Verify payment status
+ */
+export const verifyStatus = async (uid) => {
+  try {
+    if (!uid || String(uid).trim() === "") {
+      throw new Error("verifyStatus requires a uid");
+    }
+
+    const encodedUid = encodeURIComponent(String(uid));
+    const res = await apiClient.get(
+      `/order-service/ws/ecom/order/verifyStatus/${encodedUid}`,
+    );
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Verify Status API Error:",
       error?.response?.data || error.message,
     );
 
