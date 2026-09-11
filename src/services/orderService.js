@@ -277,15 +277,20 @@ export const initiateRazorPayPayment = async (orderId) => {
 /**
  * Initiate HDFC payment
  */
-export const initiateHdfcPayment = async (orderId) => {
+export const initiateHdfcPayment = async (
+  orderId,
+  paymentInstance = "hdfc-1",
+) => {
   try {
     if (!orderId) {
       throw new Error("initiateHdfcPayment requires an orderId");
     }
 
     const encodedOrderId = encodeURIComponent(String(orderId));
+    const selectedPaymentInstance = String(paymentInstance || "hdfc-1").trim();
     const res = await apiClient.get(
       `/order-service/ws/ecom/order/initiateHdfcPayment/${encodedOrderId}`,
+      { params: { paymentInstance: selectedPaymentInstance } },
     );
 
     // apiClient returns only res.data for non-auth APIs.
