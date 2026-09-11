@@ -1453,15 +1453,17 @@ var initiateRazorPayPayment = async (orderId) => {
     throw error;
   }
 };
-var initiateHdfcPayment = async (orderId) => {
+var initiateHdfcPayment = async (orderId, paymentInstance = "hdfc-1") => {
   var _a;
   try {
     if (!orderId) {
       throw new Error("initiateHdfcPayment requires an orderId");
     }
     const encodedOrderId = encodeURIComponent(String(orderId));
+    const selectedPaymentInstance = String(paymentInstance || "hdfc-1").trim();
     const res = await apiClient_default.get(
-      `/order-service/ws/ecom/order/initiateHdfcPayment/${encodedOrderId}`
+      `/order-service/ws/ecom/order/initiateHdfcPayment/${encodedOrderId}`,
+      { params: { paymentInstance: selectedPaymentInstance } }
     );
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = extractTokenFromResponse2(res);
