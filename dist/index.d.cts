@@ -2021,10 +2021,27 @@ const verifyRazorpayStatus = async ({
 /**
  * Fetch order list
  */
-const getOrderList = async () => {
+const getOrderList = async (statuses = [], nextCursorId = null) => {
   try {
-    const endpoint = "/order-service/cws/order/list";
-    const res = await apiClient.get(endpoint);
+    const endpoint = "/analytic-service/cws/order-service/order?limit=10";
+    const requestOptions =
+      statuses && typeof statuses === "object" && !Array.isArray(statuses)
+        ? statuses
+        : { statuses, nextCursorId };
+    const requestStatuses = Array.isArray(requestOptions.statuses)
+      ? requestOptions.statuses
+      : Array.isArray(requestOptions?.statuses)
+        ? requestOptions.statuses
+        : null;
+    const requestBody =
+      requestStatuses === null ? {} : { statuses: requestStatuses };
+    if (
+      requestOptions.nextCursorId !== null &&
+      requestOptions.nextCursorId !== undefined
+    ) {
+      requestBody.nextCursorId = requestOptions.nextCursorId;
+    }
+    const res = await apiClient.post(endpoint, requestBody);
 
     // apiClient returns only res.data for non-auth APIs.
     const responseData = res?.data ? res.data : res;
@@ -2112,6 +2129,42 @@ const getOrderDeliveryStatusByBillId = async (billId) => {
   } catch (error) {
     console.error(
       "Order Delivery Status API Error:",
+      error?.response?.data || error.message,
+    );
+
+    throw error;
+  }
+};
+
+/**
+ * Fetch order deliveries by orderId
+ */
+const getOrderDeliveries = async (orderId) => {
+  try {
+    if (
+      orderId === undefined ||
+      orderId === null ||
+      String(orderId).trim() === ""
+    ) {
+      throw new Error("getOrderDeliveries requires an orderId");
+    }
+
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const endpoint = `/analytic-service/cws/order-service/order/${encodedOrderId}/deliveries`;
+    const res = await apiClient.get(endpoint);
+
+    // apiClient returns only res.data for non-auth APIs.
+    const responseData = res?.data ? res.data : res;
+
+    const token = extractTokenFromResponse(res);
+    if (token) {
+      setToken(token);
+    }
+
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order Deliveries API Error:",
       error?.response?.data || error.message,
     );
 
@@ -2398,4 +2451,4 @@ const getProductDetailById = async ({
   }
 };
 
-export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generateEcomSetNewPasswordOtp, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateFreechargePayment, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setEcomNewPassword, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus, verifyStatus };
+export { addBankDetails, addCustomerAddress, addCustomerBeneficiary, addItemToCart, cancelOrderBySku, checkRegisterVerifyAadhaarDigilockerSession, checkTenant, checkTransactionStatus, clearToken, clearUserDetails, configureAuthRedirect, consumeAuthRedirectMessage, customerLogin, ecomLogin, editCustomerAddress, ensureAuthenticatedOnLoad, generateEcomSetNewPasswordOtp, generatePaymentLink, generateSetNewPasswordOtp, getActiveRegisterConsentRequirements, getAuthRedirectMessage, getCategoriesByTenant, getCustomer, getCustomerAddress, getCustomerBeneficiaries, getFiltersByTenantAndStore, getOrderById, getOrderDeliveries, getOrderDeliveryStatusByBillId, getOrderList, getProductDetailById, getProductsByTenantAndStore, getRegisterTransactionId, getSetNewPasswordTransactionId, getTenantId, getTenantIdByDomain, getToken, getUserDetails, initClient, initiateFreechargePayment, initiateHdfcPayment, initiateRazorPayPayment, initiateRegisterVerifyAadhaarDigilockerSession, isTokenExpired, login, logout, placeOrder, recordOrderPayment, redirectToLogin, refreshCart, refreshToken, register, registerEcom, removeItemFromCart, resendRegisterOtp, saveRegisterAadhaarAddress, saveRegisterDetails, searchProductsV2, sendRegisterVerifyAadhaarOtp, sendRegisterVerifyEmailOtp, sendRegisterVerifyMobileOtp, setEcomNewPassword, setNewPassword, setTenantId, setToken, setUserDetails, updateItemQty, validatePinCode, validateRegisterBankAccount, validateRegisterOtp, validateRegisterPan, validateRegisterReference, validateRegisterVerifyAadhaarOtp, validateRegisterVerifyEmailOtp, validateRegisterVerifyMobileOtp, verifyHdfcStatus, verifyRazorpayStatus, verifyStatus };
