@@ -1483,11 +1483,17 @@ var verifyRazorpayStatus = async ({
     throw error;
   }
 };
-var getOrderList = async () => {
+var getOrderList = async (statuses = [], nextCursorId = null) => {
   var _a;
   try {
-    const endpoint = "/order-service/cws/order/list";
-    const res = await apiClient_default.get(endpoint);
+    const endpoint = "/analytic-service/cws/order-service/order?limit=10";
+    const requestOptions = statuses && typeof statuses === "object" && !Array.isArray(statuses) ? statuses : { statuses, nextCursorId };
+    const requestStatuses = Array.isArray(requestOptions.statuses) ? requestOptions.statuses : Array.isArray(requestOptions == null ? void 0 : requestOptions.statuses) ? requestOptions.statuses : null;
+    const requestBody = requestStatuses === null ? {} : { statuses: requestStatuses };
+    if (requestOptions.nextCursorId !== null && requestOptions.nextCursorId !== void 0) {
+      requestBody.nextCursorId = requestOptions.nextCursorId;
+    }
+    const res = await apiClient_default.post(endpoint, requestBody);
     const responseData = (res == null ? void 0 : res.data) ? res.data : res;
     const token = extractTokenFromResponse2(res);
     if (token) {
@@ -1545,6 +1551,29 @@ var getOrderDeliveryStatusByBillId = async (billId) => {
   } catch (error) {
     console.error(
       "Order Delivery Status API Error:",
+      ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
+    );
+    throw error;
+  }
+};
+var getOrderDeliveries = async (orderId) => {
+  var _a;
+  try {
+    if (orderId === void 0 || orderId === null || String(orderId).trim() === "") {
+      throw new Error("getOrderDeliveries requires an orderId");
+    }
+    const encodedOrderId = encodeURIComponent(String(orderId));
+    const endpoint = `/analytic-service/cws/order-service/order/${encodedOrderId}/deliveries`;
+    const res = await apiClient_default.get(endpoint);
+    const responseData = (res == null ? void 0 : res.data) ? res.data : res;
+    const token = extractTokenFromResponse2(res);
+    if (token) {
+      setToken(token);
+    }
+    return responseData;
+  } catch (error) {
+    console.error(
+      "Order Deliveries API Error:",
       ((_a = error == null ? void 0 : error.response) == null ? void 0 : _a.data) || error.message
     );
     throw error;
@@ -1775,6 +1804,7 @@ export {
   getCustomerBeneficiaries,
   getFiltersByTenantAndStore,
   getOrderById,
+  getOrderDeliveries,
   getOrderDeliveryStatusByBillId,
   getOrderList,
   getProductDetailById,
