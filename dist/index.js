@@ -462,15 +462,18 @@ var setEcomNewPassword = async ({
       "transactionId is required. Call generateEcomSetNewPasswordOtp first or pass transactionId explicitly."
     );
   }
-  const res = await apiClient_default.post("/auth-service/ecom/password/setNewPassword", {
-    emailId,
-    mobileNumber,
-    distributorCode,
-    transactionId: resolvedTransactionId,
-    otp,
-    newPassword,
-    domainName
-  });
+  const res = await apiClient_default.post(
+    "/auth-service/ecom/password/setNewPassword",
+    {
+      emailId,
+      mobileNumber,
+      distributorCode,
+      transactionId: resolvedTransactionId,
+      otp,
+      newPassword,
+      domainName
+    }
+  );
   return (res == null ? void 0 : res.data) || res;
 };
 var sendRegisterVerifyMobileOtp = async ({
@@ -747,6 +750,16 @@ var getTenantIdByDomain = async (tenantDomain) => {
   }
   setTenantId(tenantId);
   return String(tenantId);
+};
+var searchAddressByPincode = async (pinCode) => {
+  if (pinCode === void 0 || pinCode === null || String(pinCode).trim() === "") {
+    throw new Error("searchAddressByPincode requires a valid pinCode");
+  }
+  const encodedPinCode = encodeURIComponent(String(pinCode).trim());
+  const res = await apiClient_default.get(
+    `/auth-service/ecom/address/searchByPincode/${encodedPinCode}`
+  );
+  return (res == null ? void 0 : res.data) ? res.data : res;
 };
 var logout = async () => {
   var _a;
@@ -1834,6 +1847,7 @@ export {
   resendRegisterOtp,
   saveRegisterAadhaarAddress,
   saveRegisterDetails,
+  searchAddressByPincode,
   searchProductsV2,
   sendRegisterVerifyAadhaarOtp,
   sendRegisterVerifyEmailOtp,

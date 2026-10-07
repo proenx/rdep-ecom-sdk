@@ -357,15 +357,18 @@ export const setEcomNewPassword = async ({
     );
   }
 
-  const res = await apiClient.post("/auth-service/ecom/password/setNewPassword", {
-    emailId,
-    mobileNumber,
-    distributorCode,
-    transactionId: resolvedTransactionId,
-    otp,
-    newPassword,
-    domainName,
-  });
+  const res = await apiClient.post(
+    "/auth-service/ecom/password/setNewPassword",
+    {
+      emailId,
+      mobileNumber,
+      distributorCode,
+      transactionId: resolvedTransactionId,
+      otp,
+      newPassword,
+      domainName,
+    },
+  );
 
   return res?.data || res;
 };
@@ -718,6 +721,26 @@ export const getTenantIdByDomain = async (tenantDomain) => {
 
   setTenantId(tenantId);
   return String(tenantId);
+};
+
+/**
+ * Search address by pincode
+ */
+export const searchAddressByPincode = async (pinCode) => {
+  if (
+    pinCode === undefined ||
+    pinCode === null ||
+    String(pinCode).trim() === ""
+  ) {
+    throw new Error("searchAddressByPincode requires a valid pinCode");
+  }
+
+  const encodedPinCode = encodeURIComponent(String(pinCode).trim());
+  const res = await apiClient.get(
+    `/auth-service/ecom/address/searchByPincode/${encodedPinCode}`,
+  );
+
+  return res?.data ? res.data : res;
 };
 
 /**
